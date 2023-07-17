@@ -9,7 +9,7 @@ Create an expert from a pretrained 🤗 HuggingFace protein language model (PLM)
 ```python
 prot_bert_expert = evo_prot_grad.get_expert('bert', temperature = 1.0, device = 'cuda')
 ```
-The default BERT-style PLM in `EvoProtGrad` is `Rostlab/prot_bert`. Normally, we would need to also provide the model itself and its tokenizer. When using a default PLM expert, we automatically pull these from the HuggingFace Hub. The temperature parameter rescales the expert scores but only matters when composing multiple experts. For masked language models like `prot_bert`, we score variant sequences with the sum of amino acid log probabilities by default.
+The default BERT-style PLM in `EvoProtGrad` is `Rostlab/prot_bert`. Normally, we would need to also provide the model itself and its tokenizer. When using a default PLM expert, we automatically pull these from the HuggingFace Hub. The temperature parameter rescales the expert scores and can be used to trade off the importance of different experts. For masked language models like `prot_bert`, we score variant sequences with the sum of amino acid log probabilities by default.
 
 Then, we create an instance of `DirectedEvolution` and run the search, returning a list of the best variant per Markov chain (as measured by the `prot_bert` expert):
 

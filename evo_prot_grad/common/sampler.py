@@ -135,13 +135,13 @@ class DirectedEvolution:
             PoE (torch.Tensor): product of experts score of shape [parallel_chains]
         """
         ohs = []
-        energies = []
+        scores = []
         for expert in self.experts:
             oh, score = expert(inputs)
             ohs += [oh]
-            energies += [expert.temperature * score]
+            scores += [expert.temperature * score]
         # sum scores over experts
-        return ohs, torch.stack(energies, dim=0).sum(dim=0)
+        return ohs, torch.stack(scores, dim=0).sum(dim=0)
     
 
     def _compute_gradients(self, ohs: List[torch.Tensor], PoE: torch.Tensor) -> torch.Tensor:
