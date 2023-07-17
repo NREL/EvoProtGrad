@@ -2,9 +2,14 @@
 
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-A Python package for directed **evo**lution on a **pro**tein sequence with **grad**ient-based discrete Markov chain monte carlo (MCMC). Users can compose their own differentiable supervised protein sequence models that predict a specific function with unsupervised models, including protein language models (PLMs), to guide and constrain search. The library is designed to natively integrate with 🤗 HuggingFace and supports PLMs from the [transformers](https://huggingface.co/docs/transformers/index) library.
+A Python package for directed **evo**lution on a **pro**tein sequence with **grad**ient-based discrete Markov chain monte carlo (MCMC). Users are able to compose their custom protein models that map sequence to function with various pretrained models, including protein language models (PLMs), to guide and constrain search. The library is designed to natively integrate with 🤗 HuggingFace and supports PLMs from the [transformers](https://huggingface.co/docs/transformers/index) library.
 
-The underlying search technique is based on a variant of discrete MCMC that use gradients of a differentiable target function to rapidly explore a protein fitness landscape directly in sequence space. This approach is designed to be more efficient and effective than brute force and random search. See the [publication](https://doi.org/10.1088/2632-2153/accacd) for more details.
+The underlying search technique is based on a variant of discrete MCMC that uses gradients of a *differentiable* compositional target function to rapidly explore a protein's fitness landscape in sequence space. 
+We allow users to compose their own custom target function for MCMC by leveraging the Product of Experts MCMC paradigm.
+Each model is an "expert" that contributes its own knowledge about the protein's fitness landscape to the overall target function.
+Our MCMC sampler is designed to be more efficient and effective than brute force and random search while maintaining most of the generality and flexibility.
+ 
+See our [publication](https://doi.org/10.1088/2632-2153/accacd) and our [documentation](https://nrel.github.io/EvoProtGrad) for more details.
 
 
 ## Installation
@@ -46,6 +51,22 @@ variants, scores = evo_prot_grad.DirectedEvolution(
                    max_mutations = 10              # maximum number of mutations per variant
 )()
 ```
+
+We provide a few  experts in `evo_prot_grad/experts` that you can use out of the box, such as:
+
+Protein Language Models (PLMs)
+
+- `bert`, BERT-style PLMs, default: `Rostlab/prot_bert`
+- `causallm`, CausalLM-style PLMs, default: `lightonai/RITA_s`
+- `esm`, ESM-style PLMs, default: `facebook/esm2_t6_8M_UR50D`
+
+Potts models
+
+- `evcouplings`
+
+and an generic expert for supervised downstream regression models
+
+- `onehot_downstream_regression`
 
 See `demo.ipynb` to get started right away in a Jupyter notebook.
 
