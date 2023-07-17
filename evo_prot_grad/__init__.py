@@ -13,6 +13,27 @@ def get_expert(expert_name: str,
                device: str = 'cpu',
                use_without_wildtype: bool = False) -> Expert:
     """
+    Current supported expert types (to pass to argument `expert_name`):
+        - `bert`
+        - `causallm`
+        - `esm`
+        - `evcouplings`
+        - `onehot_downstream_regression`
+
+    Customize the expert by specifying the model and tokenizer. 
+    For example:
+
+    ```python
+    from evo_prot_grad.experts import get_expert
+    from transformers import AutoTokenizer, EsmForMaskedLM
+
+    expert = get_expert(
+        expert_name = 'esm',
+        model = EsmForMaskedLM.from_pretrained("facebook/esm2_t36_3B_UR50D"),
+        tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t36_3B_UR50D"),
+        device = 'cuda'
+    )   
+    ```
 
     Args:
         expert_name (str): Name of the expert to be used.

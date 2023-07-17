@@ -51,15 +51,17 @@ We provide a baseclass `evo_prot_grad.experts.base_experts.HuggingFaceExpert` wh
 - CausalLM-style PLMs (`evo_prot_grad.experts.causallm_expert.CausalLMExpert`)
 - ESM-style PLMs (`evo_prot_grad.experts.esm_expert.EsmExpert`)
 
-Each HuggingFace PLM expert has to specify the model and tokenizer to use. We provide defaults for each type of PLM. 
-For example, an ESM2 expert can be instantiated with only:
+Each HuggingFace PLM expert has to specify the model and tokenizer to use. Defaults for each type of PLM are provided. 
+
+For example, an ESM2 expert can be instantiated with `evo_prot_grad.get_expert` with only:
 
 ```python
 esm2_expert = evo_prot_grad.get_expert('esm', temperature = 1.0, device = 'cuda')
 ```
 
-with default model `EsmForMaskedLM.from_pretrained("facebook/esm2_t6_8M_UR50D")` and tokenizer `AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")`.
-With custom model and tokenizer:
+using the default model `EsmForMaskedLM.from_pretrained("facebook/esm2_t6_8M_UR50D")` and tokenizer `AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")`.
+
+To load the ESM2 expert with a specific model and tokenizer, provide them as arguments to `get_expert`:
 
 ```python
 from transformers import AutoTokenizer, EsmForMaskedLM
