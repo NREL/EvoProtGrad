@@ -8,7 +8,7 @@
         show_source: false
         heading_level: 4
         show_root_heading: true
-        members: ["_tokenize", "_get_last_one_hots", "_model_output_to_scalar_energy", "set_wt_energy", "__call__"]
+        members: ["_tokenize", "_get_last_one_hots", "_model_output_to_scalar_score", "set_wt_score", "__call__"]
 
 
 ## HuggingFaceExpert
@@ -17,7 +17,7 @@
         show_source: false
         heading_level: 4
         show_root_heading: true
-        members: ["_model_output_to_scalar_energy", "set_wt_energy", 
+        members: ["_model_output_to_scalar_score", "set_wt_score", 
         "__call__"]
 
 ## BERTExpert
@@ -50,7 +50,7 @@
         show_source: false
         heading_level: 4
         show_root_heading: true
-        members: ["_tokenize", "_model_output_to_scalar_energy", "set_wt_energy", "__call__"]
+        members: ["_tokenize", "_model_output_to_scalar_score", "set_wt_score", "__call__"]
 
 ---
 

@@ -4,7 +4,7 @@
 
 A Python package for directed **evo**lution on a **pro**tein sequence with **grad**ient-based discrete Markov chain monte carlo (MCMC). Users can compose their own differentiable supervised protein sequence models that predict a specific function with unsupervised models, including protein language models (PLMs), to guide and constrain search. The library is designed to natively integrate with 🤗 HuggingFace and supports PLMs from the [transformers](https://huggingface.co/docs/transformers/index) library.
 
-The underlying search technique is based on a variant of discrete MCMC that use gradients of a differentiable energy function to rapidly explore a protein fitness landscape directly in sequence space. This approach is designed to be more efficient and effective than brute force and random search. See the [publication](https://doi.org/10.1088/2632-2153/accacd) for more details.
+The underlying search technique is based on a variant of discrete MCMC that use gradients of a differentiable target function to rapidly explore a protein fitness landscape directly in sequence space. This approach is designed to be more efficient and effective than brute force and random search. See the [publication](https://doi.org/10.1088/2632-2153/accacd) for more details.
 
 
 ## Installation

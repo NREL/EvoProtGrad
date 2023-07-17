@@ -27,7 +27,7 @@ class BERTExpert(HuggingFaceExpert):
             model (nn.Module): The model to use for the expert.
             tokenizer (PreTrainedTokenizerBase): The tokenizer to use for the expert. 
             device (str): The device to use for the expert. 
-            use_without_wildtype (bool): Whether to use the wildtype energy as a baseline.
+            use_without_wildtype (bool): Whether to use the wildtype score as a baseline.
         Raises:
             ValueError: If either `model` or `tokenizer` is not specified.
         """

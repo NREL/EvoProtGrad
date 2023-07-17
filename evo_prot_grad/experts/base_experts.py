@@ -26,7 +26,7 @@ class Expert(ABC):
                 The tokenizer to use for the expert.
             device (str): The device to use for the expert.
             use_without_wildtype (bool): Whether to use the expert without the wildtype,
-                i.e., do not subtract the wildtype energy from the expert energy.
+                i.e., do not subtract the wildtype score from the expert score.
         """
         self.model = model
         self.temperature = temperature
@@ -45,7 +45,7 @@ class Expert(ABC):
                                          self.alphabet, self.device)
         
         # a torch scalar 
-        self._wt_energy = None
+        self._wt_score = None
        
     @abstractmethod
     def _tokenize(self, inputs: List[str]) -> Any:
@@ -78,24 +78,24 @@ class Expert(ABC):
     
 
     @abstractmethod
-    def _model_output_to_scalar_energy(self,
+    def _model_output_to_scalar_score(self,
                                        model_output: torch.Tensor,
                                        **kwargs) -> torch.Tensor:
-        """Converts the model output to a scalar energy. 
+        """Converts the model output to a scalar score. 
 
         Args:
             model_output (torch.Tensor): The output of the expert model.
             **kwargs (Dict): Any additional arguments required by the expert.
         Returns:
-            energy (torch.Tensor): The scalar energy.
+            score (torch.Tensor): The scalar score.
         """
         raise NotImplementedError()
     
     ####### "Public" methods #######
 
     @abstractmethod
-    def set_wt_energy(self, wt_seq: str) -> None:
-        """Sets the wildtype energy value for protein wt_seq.
+    def set_wt_score(self, wt_seq: str) -> None:
+        """Sets the wildtype score value for protein wt_seq.
 
         Args:
             wt_seq (str): The wildtype sequence.
@@ -137,8 +137,8 @@ class HuggingFaceExpert(Expert):
         super().__init__(temperature, model, tokenizer, device, use_without_wildtype)
 
 
-    def set_wt_energy(self, wt_seq: str) -> None:
-        """ Sets the energy value for wildtype protein wt_seq.
+    def set_wt_score(self, wt_seq: str) -> None:
+        """ Sets the score value for wildtype protein wt_seq.
 
         Args:
             wt_seq (str): The wildtype sequence.
@@ -149,18 +149,18 @@ class HuggingFaceExpert(Expert):
         logits = self.model(**encoded_inputs).logits
         oh = self._get_last_one_hots()
 
-        self._wt_energy = self._model_output_to_scalar_energy(oh, logits=logits).detach()
+        self._wt_score = self._model_output_to_scalar_score(oh, logits=logits).detach()
 
 
-    def _model_output_to_scalar_energy(self, x_oh: torch.Tensor, logits: torch.Tensor) -> torch.Tensor:
-        """Returns the scalar energy assuming the expert predicts
+    def _model_output_to_scalar_score(self, x_oh: torch.Tensor, logits: torch.Tensor) -> torch.Tensor:
+        """Returns the scalar score assuming the expert predicts
         a logit score for each amino acid.
 
         Args:
             x_oh: (torch.Tensor) of shape [parallel_chains, seq_len, vocab_size]
             logits: (torch.Tensor) of shape [parallel_chains, seq_len, vocab_size]
         Returns: 
-            energy (torch.Tensor): of shape [parallel_chains]
+            score (torch.Tensor): of shape [parallel_chains]
         """
         return (x_oh * torch.nn.functional.log_softmax(logits, dim=-1)).sum(dim=[1,2])    
 
@@ -176,18 +176,18 @@ class HuggingFaceExpert(Expert):
             expert_score (torch.Tensor): of shape [parallel_chains]
         """
         if not self.use_without_wildtype:
-            assert self._wt_energy is not None, \
-                "Wildtype energy must be set before calling the expert."
+            assert self._wt_score is not None, \
+                "Wildtype score must be set before calling the expert."
 
         encoded_inputs = self._tokenize(inputs)
         # All HF PLMs output a ModelOutput object with a logits attribute
         logits = self.model(**encoded_inputs).logits
         oh = self._get_last_one_hots()
         if self.use_without_wildtype:
-            energy = self._model_output_to_scalar_energy(oh, logits=logits)
+            score = self._model_output_to_scalar_score(oh, logits=logits)
         else:
-            energy = self._model_output_to_scalar_energy(oh, logits=logits) - self._wt_energy
-        return oh, energy 
+            score = self._model_output_to_scalar_score(oh, logits=logits) - self._wt_score
+        return oh, score 
     
 
 class AttributeExpert(Expert):
@@ -212,18 +212,18 @@ class AttributeExpert(Expert):
             tokenizer = tokenizers.OneHotTokenizer(utils.CANONICAL_ALPHABET)
         super().__init__(temperature, model, tokenizer, device, use_without_wildtype)
 
-    def set_wt_energy(self, wt_seq: str) -> None:
-        """Sets the energy value for wildtype protein wt_seq.
+    def set_wt_score(self, wt_seq: str) -> None:
+        """Sets the score value for wildtype protein wt_seq.
         
         Args:
             wt_seq (str): The wildtype sequence.
         """
         encoded_inputs = self._tokenize([wt_seq])
         y = self.model(encoded_inputs)
-        self.wt_energy = self._model_output_to_scalar_energy(y)
+        self.wt_score = self._model_output_to_scalar_score(y)
 
-    def _model_output_to_scalar_energy(self, model_outputs: torch.Tensor) -> torch.Tensor:
-        """Returns the energy for the given input assuming 
+    def _model_output_to_scalar_score(self, model_outputs: torch.Tensor) -> torch.Tensor:
+        """Returns the score for the given input assuming 
         the expert predicts a single scalar. 
 
         Args:
@@ -252,16 +252,16 @@ class AttributeExpert(Expert):
             inputs (List[str]): A list of protein sequence strings of len [parallel_chains].
         Returns:
             oh (torch.Tensor): of shape [parallel_chains, seq_len, vocab_size]
-            energy (torch.Tensor): of shape [parallel_chains]
+            score (torch.Tensor): of shape [parallel_chains]
         """
         if not self.use_without_wildtype:
-            assert self.wt_energy is not None, \
-                "Wildtype energy must be set before calling the expert."
+            assert self.wt_score is not None, \
+                "Wildtype score must be set before calling the expert."
         encoded_oh_inputs = self._tokenize(inputs)
         encoded_oh_inputs = encoded_oh_inputs.requires_grad_()
         y = self.model(encoded_oh_inputs)
         if self.use_without_wildtype:
-            energy = self._model_output_to_scalar_energy(y)
+            score = self._model_output_to_scalar_score(y)
         else:
-            energy = self._model_output_to_scalar_energy(y) - self.wt_energy
-        return encoded_oh_inputs, energy 
+            score = self._model_output_to_scalar_score(y) - self.wt_score
+        return encoded_oh_inputs, score 

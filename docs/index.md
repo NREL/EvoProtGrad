@@ -1,6 +1,6 @@
 EvoProtGrad is a Python package for sampling mutations near a wild type protein. Directed **evo**lution on a **pro**tein sequence with **grad**ient-based discrete Markov chain monte carlo (MCMC) enables users to compose models that predict a specific protein function with pretrained models such as protein language models (PLMs) to guide and constrain directed evolution. EvoProtGrad natively integrates with 🤗 HuggingFace PLMs via the [transformers](https://huggingface.co/docs/transformers/index) library.
 
-The underlying technique for composable directed evolution is based on a variant of discrete MCMC that use *gradients* of a differentiable energy function (i.e., a "product of experts") to rapidly explore protein fitness landscapes *in sequence space*. This approach is designed to be more efficient and effective than brute force and random discrete search. 
+The underlying technique for composable directed evolution is based on a variant of discrete MCMC that use *gradients* of a differentiable target function (i.e., a "product of experts") to rapidly explore protein fitness landscapes *in sequence space*. This approach is designed to be more efficient and effective than brute force and random discrete search. 
 
 See our [publication](https://doi.org/10.1088/2632-2153/accacd) for more details.
 

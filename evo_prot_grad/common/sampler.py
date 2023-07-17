@@ -118,28 +118,29 @@ class DirectedEvolution:
         self.chains_oh_history = []
 
         for expert in self.experts:
-            expert.set_wt_energy(self.wtseq)
+            expert.set_wt_score(self.wtseq)
 
         
 
-    def _product_of_experts(self, inputs: List[str]):
-        """
-        Compute the product of experts by evaluating
-        each expert energy function and summing together.
-        
-        Returns the product of experts energies and ohs
-
+    def _product_of_experts(self, inputs: List[str]) -> Tuple[List[torch.Tensor], torch.Tensor]:
+        """Compute the product of experts.
+        Computes each expert score, multiplies it by
+        the expert temperature, and aggregates the scores
+        by summation.
+               
         Args:
             inputs: list of protein sequences of len [parallel_chains]
-        Returns
+        Returns:
+            ohs (List[torch.Tensor]): list of one-hot encoded sequences of len [parallel_chains]
+            PoE (torch.Tensor): product of experts score of shape [parallel_chains]
         """
         ohs = []
         energies = []
         for expert in self.experts:
-            oh, energy = expert(inputs)
+            oh, score = expert(inputs)
             ohs += [oh]
-            energies += [expert.temperature * energy]
-        # sum energies over experts
+            energies += [expert.temperature * score]
+        # sum scores over experts
         return ohs, torch.stack(energies, dim=0).sum(dim=0)
     
 
@@ -151,7 +152,7 @@ class DirectedEvolution:
         Args:
             ohs (List[torch.Tensor]): tensor one-hot embeddings of shape [parallel_chains, seq_len, vocab_size].
                  List is of length # experts
-            PoE (torch.Tensor): product of experts energy of shape [parallel_chains]
+            PoE (torch.Tensor): product of experts score of shape [parallel_chains]
         """
         # sum over chains
         oh_grads = torch.autograd.grad(PoE.sum(), ohs)
@@ -171,11 +172,7 @@ class DirectedEvolution:
 
     def __call__(self) -> Tuple[List[str], np.ndarray]:
         """
-        Run the sampler.
-
-        Maintains a list of parallel chains of protein sequences (strings)
-        and a torch.FloatTensor of shape [parallel_chains, seq_len, vocab_size] (one-hot) 
-        for the current state each MCMC chain. The vocab dim is in canonical order.
+        Run the gradient-based MCMC sampler.
 
         Returns:
             variants (List[str]): list of protein sequences
@@ -210,9 +207,9 @@ class DirectedEvolution:
             with torch.no_grad():
                 for step in range(max_u):
                     
-                    energy_change = grad_x - (grad_x * cur_chains_oh).sum(-1).unsqueeze(-1)
+                    score_change = grad_x - (grad_x * cur_chains_oh).sum(-1).unsqueeze(-1)
                     traj_list += [cur_chains_oh]
-                    approx_forward_expert_change = energy_change.reshape(self.parallel_chains,-1) / 2
+                    approx_forward_expert_change = score_change.reshape(self.parallel_chains,-1) / 2
                     
                     if self.max_mutations > 0:
                         # compute the mut_distance between cur_chains_oh and wt
@@ -253,12 +250,12 @@ class DirectedEvolution:
                  # backwd from y -> x
                 traj_list.append(y)
                 traj = torch.stack(traj_list[1:], dim=1)
-                reverse_energy_change = grad_y.unsqueeze(1) - (grad_y.unsqueeze(1) * traj).sum(-1).unsqueeze(-1)
-                reverse_energy_change = reverse_energy_change.reshape(self.parallel_chains, max_u, -1) / 2.0
+                reverse_score_change = grad_y.unsqueeze(1) - (grad_y.unsqueeze(1) * traj).sum(-1).unsqueeze(-1)
+                reverse_score_change = reverse_score_change.reshape(self.parallel_chains, max_u, -1) / 2.0
                 log_ratio = 0
                 for id in range(len(onehot_Idx)):
                     cd_reverse = torch.distributions.one_hot_categorical.OneHotCategorical(
-                        probs=utils.safe_logits_to_probs(reverse_energy_change[:,id]))
+                        probs=utils.safe_logits_to_probs(reverse_score_change[:,id]))
                     log_ratio += u_mask[:,id] * (cd_reverse.log_prob(onehot_Idx[id]) - forward_categoricals[id].log_prob(onehot_Idx[id]))
                 
                 #log_acc = log_backwd - log_fwd

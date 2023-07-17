@@ -36,17 +36,17 @@ class EVCouplingsExpert(Expert):
         assert model.alphabet == self.alphabet, \
             f"EVcouplings alphabet {model.alphabet} should match our canonical alphabet {self.alphabet}"
 
-    def set_wt_energy(self, wt_seq: str) -> None:
-        """Sets the wildtype energy value for protein wt_seq
+    def set_wt_score(self, wt_seq: str) -> None:
+        """Sets the wildtype score value for protein wt_seq
         """
         encoded_inputs = self._tokenize([wt_seq])
-        self._wt_energy = self.model(encoded_inputs)
+        self._wt_score = self.model(encoded_inputs)
         
 
     def _get_last_one_hots(self) -> torch.Tensor:
         return self.model.one_hot_embedding.one_hots
     
-    def _model_output_to_scalar_energy(self, hamiltonian: torch.Tensor):
+    def _model_output_to_scalar_score(self, hamiltonian: torch.Tensor):
         """ Hamiltonian  """
         return hamiltonian
 
@@ -62,16 +62,16 @@ class EVCouplingsExpert(Expert):
             expert_score (torch.Tensor): of shape [parallel_chains]
         """
         if not self.use_without_wildtype:
-            assert self._wt_energy is not None, "Wildtype energy must be set before calling the expert."
+            assert self._wt_score is not None, "Wildtype score must be set before calling the expert."
 
         encoded_inputs = self._tokenize(inputs)
         hamiltonian = self.model(encoded_inputs)
         oh = self._get_last_one_hots()
         if self.use_without_wildtype:
-            energy = self._model_output_to_scalar_energy(hamiltonian)
+            score = self._model_output_to_scalar_score(hamiltonian)
         else:
-            energy = self._model_output_to_scalar_energy(hamiltonian) - self._wt_energy
-        return oh, energy 
+            score = self._model_output_to_scalar_score(hamiltonian) - self._wt_score
+        return oh, score 
     
 def build(**kwargs):
     return EVCouplingsExpert(**kwargs)
