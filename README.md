@@ -1,10 +1,6 @@
 # EvoProtGrad
 
-[![PyPI version](https://badge.fury.io/py/prot-evo-grad.svg)](https://badge.fury.io/py/prot-evo-grad)
-[![Build Status](https://travis-ci.com/Rostlab/EvoProtGrad.svg?branch=master)](https://travis-ci.com/Rostlab/EvoProtGrad)
-[![codecov](https://codecov.io/gh/Rostlab/EvoProtGrad/branch/master/graph/badge.svg)](https://codecov.io/gh/Rostlab/EvoProtGrad)
-[![Documentation Status](https://readthedocs.org/projects/evoprotgrad/badge/?version=latest)](https://evoprotgrad.readthedocs.io/en/latest/?badge=latest)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 A Python package for directed **evo**lution on a **pro**tein sequence with **grad**ient-based discrete Markov chain monte carlo (MCMC). Users can compose their own differentiable supervised protein sequence models that predict a specific function with unsupervised models, including protein language models (PLMs), to guide and constrain search. The library is designed to natively integrate with 🤗 HuggingFace and supports PLMs from the [transformers](https://huggingface.co/docs/transformers/index) library.
 
