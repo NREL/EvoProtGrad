@@ -14,6 +14,7 @@ def get_expert(expert_name: str,
                use_without_wildtype: bool = False) -> Expert:
     """
     Current supported expert types (to pass to argument `expert_name`):
+    
         - `bert`
         - `causallm`
         - `esm`
