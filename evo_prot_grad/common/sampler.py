@@ -207,6 +207,9 @@ class DirectedEvolution:
             with torch.no_grad():
                 for step in range(max_u):
                     
+                    # this sampler permits identity substitions, and is
+                    # likely to occur when the score change is negative for 
+                    # almost all other mutations.
                     score_change = grad_x - (grad_x * cur_chains_oh).sum(-1).unsqueeze(-1)
                     traj_list += [cur_chains_oh]
                     approx_forward_expert_change = score_change.reshape(self.parallel_chains,-1) / 2
@@ -275,7 +278,7 @@ class DirectedEvolution:
             
             if self.verbose:
                 x_strs = self.canonical_chain_tokenizer.decode(cur_chains_oh)
-                print(f'step {i} acceptance rate: ', log_acc.exp())
+                print(f'step {i} acceptance rate: ', log_acc.exp().item())
                 for idx,variant in enumerate(x_strs):
                     print(f'>variant {idx}, PoE {PoE[idx]}')
                     print(variant)

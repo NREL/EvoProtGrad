@@ -44,8 +44,9 @@ variants, scores = evo_prot_grad.DirectedEvolution(
                    output = 'best',                # return best, last, all variants    
                    experts = [prot_bert_expert],   # list of experts to compose
                    parallel_chains = 1,            # number of parallel chains to run
-                   n_steps = 100,                  # number of MCMC steps per chain
-                   max_mutations = 10              # maximum number of mutations per variant
+                   n_steps = 20,                   # number of MCMC steps per chain
+                   max_mutations = 10,             # maximum number of mutations per variant
+                   verbose = True                  # print debug info to command line
 )()
 ```
 

@@ -1,3 +1,4 @@
-transformers[torch]
-evcouplings
-scikit-learn
+transformers[torch]==4.28.1
+scikit-learn==1.2.2
+pandas==2.0.1
+evcouplings==0.1.1
