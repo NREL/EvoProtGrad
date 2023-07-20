@@ -79,3 +79,14 @@ def set_seed(seed: int) -> None:
     torch.cuda.manual_seed_all(seed)
     np.random.seed(seed)
     random.seed(seed)
+
+def print_variant_in_color(seq: str, wt: str, ignore_gaps: bool = True) -> None:
+    """Print a variant in color."""
+    for j in range(len(wt)):
+        if seq[j] != wt[j]:
+            if ignore_gaps and (seq[j] == '-' or seq[j] == 'X'):
+                continue
+            print(f'\033[91m{seq[j]}', end='')
+        else:
+            print(f'\033[0m{seq[j]}', end='')
+    print('\033[0m')

@@ -6,3 +6,4 @@
 site/
 build/
 dist/
+demo.py

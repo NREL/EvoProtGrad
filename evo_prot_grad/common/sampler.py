@@ -278,10 +278,10 @@ class DirectedEvolution:
             
             if self.verbose:
                 x_strs = self.canonical_chain_tokenizer.decode(cur_chains_oh)
-                print(f'step {i} acceptance rate: ', log_acc.exp().item())
+                print(f'step {i} acceptance rate: {log_acc.exp().item():.4f}')
                 for idx,variant in enumerate(x_strs):
-                    print(f'>variant {idx}, PoE {PoE[idx]}')
-                    print(variant)
+                    print(f'>chain {idx}, Product of Experts score: {PoE[idx]:.4f}')
+                    utils.print_variant_in_color(variant, self.wtseq)
 
             if self.max_mutations > 0:
                 # Once a chain reaches the max mutations, reset it to WT            
