@@ -27,10 +27,10 @@ P(X) = \frac{1}{Z}  F(X) G(X)^{\lambda}
 $$
 
 
-where $F(X)$ may correspond to the probability given by an unsupervised pretrained PLM to sequence $X$ and $G(X)$ may correspond to the probability assigned to $X$ by a supervised downstream regression model (interpreted as an unnormalized Boltzmann distribution with temperature $\lambda$). We can compute the sum of the (log) probabilities of the experts as follows:
+where $F(X)$ may correspond to the probability given by an unsupervised pretrained PLM to sequence $X$ and $G(X)$ may correspond to the probability assigned to $X$ by a supervised downstream regression model (interpreted as an unnormalized Boltzmann distribution with temperature $\lambda$). The log probability of the experts is:
 
 $$
-\log P(X) = \log F(X) - \lambda \log G(X) - \log Z.
+\log P(X) = \log F(X) + \lambda \log G(X) - \log Z.
 $$
 
 In `EvoProtGrad`, the "score" of each expert corresponds to either $\log F(X)$ or $\log G(X)$ here. In most cases, we interpret the scalar output of a neural network as the score.
@@ -38,7 +38,7 @@ The magic of the Product of Experts formulation is that it enables us to compose
 
 In actuality, instead of just searching for a protein variant that maximizes $P(X)$, `EvoProtGrad` uses gradient-based discrete MCMC to *sample* from $P(X)$.
 MCMC is necessary for sampling from $P(X)$ because it is impractical to compute the partition function $Z$ exactly.
-Uniquely to `EvoProtGrad`, as long *all* experts are *differentiable*, our sampler can use the gradient of $\log F(X) - \lambda \log G(X)$ with respect to the one-hot protein $X$ to identify the most promising mutation to apply to $X$, which vastly speeds up MCMC convergence.
+Uniquely to `EvoProtGrad`, as long *all* experts are *differentiable*, our sampler can use the gradient of $\log F(X) + \lambda \log G(X)$ with respect to the one-hot protein $X$ to identify the most promising mutation to apply to $X$, which vastly speeds up MCMC convergence.
 
 ##  🤗 HuggingFace Transformers 
 

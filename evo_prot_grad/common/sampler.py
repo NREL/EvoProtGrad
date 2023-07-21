@@ -272,9 +272,9 @@ class DirectedEvolution:
             self.chains_oh = cur_chains_oh
             self.chains = self.canonical_chain_tokenizer.decode(cur_chains_oh)
             # History book-keeping
-            self.chains_oh_history += [cur_chains_oh]
+            self.chains_oh_history += [cur_chains_oh.clone()]
             PoE = proposed_PoE * accepted.squeeze() + PoE * (1. - accepted.squeeze())
-            self.PoE_history += [PoE]
+            self.PoE_history += [PoE.clone()]
             
             if self.verbose:
                 x_strs = self.canonical_chain_tokenizer.decode(cur_chains_oh)
