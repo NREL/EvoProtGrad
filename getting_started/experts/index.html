@@ -611,15 +611,15 @@ For example, if we have two experts <span class="arithmatex">\(F\)</span> and <s
 <div class="arithmatex">\[
 P(X) = \frac{1}{Z}  F(X) G(X)^{\lambda}
 \]</div>
-<p>where <span class="arithmatex">\(F(X)\)</span> may correspond to the probability given by an unsupervised pretrained PLM to sequence <span class="arithmatex">\(X\)</span> and <span class="arithmatex">\(G(X)\)</span> may correspond to the probability assigned to <span class="arithmatex">\(X\)</span> by a supervised downstream regression model (interpreted as an unnormalized Boltzmann distribution with temperature <span class="arithmatex">\(\lambda\)</span>). We can compute the sum of the (log) probabilities of the experts as follows:</p>
+<p>where <span class="arithmatex">\(F(X)\)</span> may correspond to the probability given by an unsupervised pretrained PLM to sequence <span class="arithmatex">\(X\)</span> and <span class="arithmatex">\(G(X)\)</span> may correspond to the probability assigned to <span class="arithmatex">\(X\)</span> by a supervised downstream regression model (interpreted as an unnormalized Boltzmann distribution with temperature <span class="arithmatex">\(\lambda\)</span>). The log probability of the experts is:</p>
 <div class="arithmatex">\[
-\log P(X) = \log F(X) - \lambda \log G(X) - \log Z.
+\log P(X) = \log F(X) + \lambda \log G(X) - \log Z.
 \]</div>
 <p>In <code>EvoProtGrad</code>, the "score" of each expert corresponds to either <span class="arithmatex">\(\log F(X)\)</span> or <span class="arithmatex">\(\log G(X)\)</span> here. In most cases, we interpret the scalar output of a neural network as the score.
 The magic of the Product of Experts formulation is that it enables us to compose arbitrary numbers of experts, essentially allowing us to "plug and play" with different experts to guide the search.</p>
 <p>In actuality, instead of just searching for a protein variant that maximizes <span class="arithmatex">\(P(X)\)</span>, <code>EvoProtGrad</code> uses gradient-based discrete MCMC to <em>sample</em> from <span class="arithmatex">\(P(X)\)</span>.
 MCMC is necessary for sampling from <span class="arithmatex">\(P(X)\)</span> because it is impractical to compute the partition function <span class="arithmatex">\(Z\)</span> exactly.
-Uniquely to <code>EvoProtGrad</code>, as long <em>all</em> experts are <em>differentiable</em>, our sampler can use the gradient of <span class="arithmatex">\(\log F(X) - \lambda \log G(X)\)</span> with respect to the one-hot protein <span class="arithmatex">\(X\)</span> to identify the most promising mutation to apply to <span class="arithmatex">\(X\)</span>, which vastly speeds up MCMC convergence.</p>
+Uniquely to <code>EvoProtGrad</code>, as long <em>all</em> experts are <em>differentiable</em>, our sampler can use the gradient of <span class="arithmatex">\(\log F(X) + \lambda \log G(X)\)</span> with respect to the one-hot protein <span class="arithmatex">\(X\)</span> to identify the most promising mutation to apply to <span class="arithmatex">\(X\)</span>, which vastly speeds up MCMC convergence.</p>
 <h2 id="huggingface-transformers">🤗 HuggingFace Transformers<a class="headerlink" href="#huggingface-transformers" title="Permanent link"></a></h2>
 <p><code>EvoProtGrad</code> provides a convenient interface for defining and using experts from the HuggingFace Hub.
 To use pretrained PLMs from the HuggingFace Hub with gradient-based discrete MCMC, we swap out each transformer's token embedding layer for a custom <a href="https://nrel.github.io/EvoProtGrad/api/common/embeddings/#onehotembedding">one-hot token embedding layer</a>. This enables us to compute and access gradients with respect to one-hot input protein sequences.</p>
