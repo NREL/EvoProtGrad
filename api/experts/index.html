@@ -21,7 +21,7 @@
         <link rel="next" href="../common/embeddings/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
+      <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.eebd395e.min.css">
       
       
 
@@ -621,24 +621,24 @@
 
 
 <h4 id="evo_prot_grad.experts.base_experts.Expert" class="doc doc-heading">
-        <code>evo_prot_grad.experts.base_experts.Expert</code>
+          <code>evo_prot_grad.experts.base_experts.Expert</code>
 
 
 </h4>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><span title="abc.ABC">ABC</span></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="abc.ABC">ABC</span></code></p>
 
   
       <p>Defines a common interface for any type of expert.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -665,6 +665,8 @@
   <div class="doc doc-contents ">
   
       <p>Tokenizes a list of protein sequences.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -694,6 +696,8 @@
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -719,6 +723,7 @@
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -754,6 +759,7 @@ of strings as input and internally converts them into one-hot tensors.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -771,6 +777,8 @@ of strings as input and internally converts them into one-hot tensors.</p>
   <div class="doc doc-contents ">
   
       <p>Converts the model output to a scalar score. </p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -800,7 +808,7 @@ of strings as input and internally converts them into one-hot tensors.</p>
         <tr>
           <td><code>**kwargs</code></td>
           <td>
-                <code>Dict</code>
+                <code><span title="typing.Dict">Dict</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -813,6 +821,8 @@ of strings as input and internally converts them into one-hot tensors.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -840,6 +850,7 @@ of strings as input and internally converts them into one-hot tensors.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -857,6 +868,8 @@ of strings as input and internally converts them into one-hot tensors.</p>
   <div class="doc doc-contents ">
   
       <p>Sets the wildtype score value for protein wt_seq.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -886,6 +899,8 @@ of strings as input and internally converts them into one-hot tensors.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -912,6 +927,7 @@ of strings as input and internally converts them into one-hot tensors.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -930,6 +946,8 @@ of strings as input and internally converts them into one-hot tensors.</p>
   
       <p>Return the expert score for a batch of protein sequences as well as 
    the one-hot encoded input sequences for which a gradient can be computed.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -958,6 +976,8 @@ of strings as input and internally converts them into one-hot tensors.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1009,22 +1029,22 @@ of strings as input and internally converts them into one-hot tensors.</p>
 
 
 <h4 id="evo_prot_grad.experts.base_experts.HuggingFaceExpert" class="doc doc-heading">
-        <code>evo_prot_grad.experts.base_experts.HuggingFaceExpert</code>
+          <code>evo_prot_grad.experts.base_experts.HuggingFaceExpert</code>
 
 
 </h4>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.Expert" href="#evo_prot_grad.experts.base_experts.Expert">Expert</a></code></p>
-
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.Expert" href="#evo_prot_grad.experts.base_experts.Expert">Expert</a></code></p>
 
 
 
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1048,6 +1068,8 @@ of strings as input and internally converts them into one-hot tensors.</p>
   
       <p>Returns the scalar score assuming the expert predicts
 a logit score for each amino acid.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1091,6 +1113,8 @@ a logit score for each amino acid.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1117,6 +1141,7 @@ a logit score for each amino acid.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1130,6 +1155,8 @@ a logit score for each amino acid.</p>
   <div class="doc doc-contents ">
   
       <p>Sets the score value for wildtype protein wt_seq.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1163,6 +1190,7 @@ a logit score for each amino acid.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1177,6 +1205,8 @@ a logit score for each amino acid.</p>
   
       <p>Returns the one-hot sequences and expert score.
 Assumes the PLM model predicts a logit score for each amino acid.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1205,6 +1235,8 @@ Assumes the PLM model predicts a logit score for each amino acid.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1256,15 +1288,15 @@ Assumes the PLM model predicts a logit score for each amino acid.</p>
 
 
 <h4 id="evo_prot_grad.experts.bert_expert.BERTExpert" class="doc doc-heading">
-        <code>evo_prot_grad.experts.bert_expert.BERTExpert</code>
+          <code>evo_prot_grad.experts.bert_expert.BERTExpert</code>
 
 
 </h4>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.HuggingFaceExpert" href="#evo_prot_grad.experts.base_experts.HuggingFaceExpert">HuggingFaceExpert</a></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.HuggingFaceExpert" href="#evo_prot_grad.experts.base_experts.HuggingFaceExpert">HuggingFaceExpert</a></code></p>
 
   
       <p>Expert sub-class for BERT-style HuggingFace protein language models.
@@ -1273,10 +1305,10 @@ Swaps out the <code>BertForMaskedLM.bert.embeddings.word_embeddings</code> layer
 for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1299,6 +1331,8 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
   <div class="doc doc-contents ">
   
       <p>Convert inputs to a format suitable for the model.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1328,6 +1362,8 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1354,6 +1390,7 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1367,6 +1404,8 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
   <div class="doc doc-contents ">
   
       <p>Returns the one-hot tensors <em>most recently passed</em> as input.</p>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1408,15 +1447,15 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
 <h4 id="evo_prot_grad.experts.causallm_expert.CausalLMExpert" class="doc doc-heading">
-        <code>evo_prot_grad.experts.causallm_expert.CausalLMExpert</code>
+          <code>evo_prot_grad.experts.causallm_expert.CausalLMExpert</code>
 
 
 </h4>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.HuggingFaceExpert" href="#evo_prot_grad.experts.base_experts.HuggingFaceExpert">HuggingFaceExpert</a></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.HuggingFaceExpert" href="#evo_prot_grad.experts.base_experts.HuggingFaceExpert">HuggingFaceExpert</a></code></p>
 
   
       <p>Expert sub-class for autoregressive (causal) HuggingFace protein language models.
@@ -1425,10 +1464,10 @@ Swaps out the <code>AutoModelForCausalLM.transformer.embedding</code> layer
 for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1451,6 +1490,8 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
   <div class="doc doc-contents ">
   
       <p>Convert inputs to a format suitable for the model.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1480,6 +1521,8 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1505,6 +1548,7 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1538,15 +1582,15 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
 <h4 id="evo_prot_grad.experts.esm_expert.EsmExpert" class="doc doc-heading">
-        <code>evo_prot_grad.experts.esm_expert.EsmExpert</code>
+          <code>evo_prot_grad.experts.esm_expert.EsmExpert</code>
 
 
 </h4>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.HuggingFaceExpert" href="#evo_prot_grad.experts.base_experts.HuggingFaceExpert">HuggingFaceExpert</a></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.HuggingFaceExpert" href="#evo_prot_grad.experts.base_experts.HuggingFaceExpert">HuggingFaceExpert</a></code></p>
 
   
       <p>Expert baseclass for HuggingFace protein language models from the ESM family.
@@ -1555,10 +1599,10 @@ Swaps out the <code>EsmForMaskedLM.esm.embeddings.word_embeddings</code> layer
 for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1581,6 +1625,8 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
   <div class="doc doc-contents ">
   
       <p>Convert inputs to a format suitable for the model.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1610,6 +1656,8 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1635,6 +1683,7 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1668,25 +1717,25 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
 <h4 id="evo_prot_grad.experts.base_experts.AttributeExpert" class="doc doc-heading">
-        <code>evo_prot_grad.experts.base_experts.AttributeExpert</code>
+          <code>evo_prot_grad.experts.base_experts.AttributeExpert</code>
 
 
 </h4>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.Expert" href="#evo_prot_grad.experts.base_experts.Expert">Expert</a></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.Expert" href="#evo_prot_grad.experts.base_experts.Expert">Expert</a></code></p>
 
   
       <p>Interface for experts trained (typically with supervised learning)
 to predict an attribute (e.g., activity or stability) from one-hot encoded sequences.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1709,6 +1758,8 @@ to predict an attribute (e.g., activity or stability) from one-hot encoded seque
   <div class="doc doc-contents ">
   
       <p>Tokenizes a list of protein sequences.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1742,6 +1793,7 @@ to predict an attribute (e.g., activity or stability) from one-hot encoded seque
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1756,6 +1808,8 @@ to predict an attribute (e.g., activity or stability) from one-hot encoded seque
   
       <p>Returns the score for the given input assuming 
 the expert predicts a single scalar. </p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1785,6 +1839,8 @@ the expert predicts a single scalar. </p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1811,6 +1867,7 @@ the expert predicts a single scalar. </p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1824,6 +1881,8 @@ the expert predicts a single scalar. </p>
   <div class="doc doc-contents ">
   
       <p>Sets the score value for wildtype protein wt_seq.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1857,6 +1916,7 @@ the expert predicts a single scalar. </p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1869,6 +1929,8 @@ the expert predicts a single scalar. </p>
 
   <div class="doc doc-contents ">
   
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1897,6 +1959,8 @@ the expert predicts a single scalar. </p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1949,25 +2013,25 @@ the expert predicts a single scalar. </p>
 
 
 <h4 id="evo_prot_grad.experts.evcouplings_expert.EVCouplingsExpert" class="doc doc-heading">
-        <code>evo_prot_grad.experts.evcouplings_expert.EVCouplingsExpert</code>
+          <code>evo_prot_grad.experts.evcouplings_expert.EVCouplingsExpert</code>
 
 
 </h4>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.Expert" href="#evo_prot_grad.experts.base_experts.Expert">Expert</a></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.Expert" href="#evo_prot_grad.experts.base_experts.Expert">Expert</a></code></p>
 
   
       <p>Expert class for EVCouplings Potts models.
 EVCouplings lib uses the canonical alphabet by default.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1989,6 +2053,8 @@ EVCouplings lib uses the canonical alphabet by default.</p>
 
   <div class="doc doc-contents ">
   
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2018,7 +2084,7 @@ EVCouplings lib uses the canonical alphabet by default.</p>
         <tr>
           <td><code>model</code></td>
           <td>
-                <code><span title="evo_prot_grad.models.potts">potts</span>.<a class="autorefs autorefs-internal" title="evo_prot_grad.models.potts.EVCouplings" href="../models/#evo_prot_grad.models.potts.EVCouplings">EVCouplings</a></code>
+                <code><a class="autorefs autorefs-internal" title="evo_prot_grad" href="../evo_prot_grad/#evo_prot_grad">potts</a>.<span title="evo_prot_grad.EVCouplings">EVCouplings</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2079,6 +2145,7 @@ EVCouplings lib uses the canonical alphabet by default.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2097,6 +2164,7 @@ EVCouplings lib uses the canonical alphabet by default.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2109,6 +2177,8 @@ EVCouplings lib uses the canonical alphabet by default.</p>
 
   <div class="doc doc-contents ">
   
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2137,6 +2207,8 @@ EVCouplings lib uses the canonical alphabet by default.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2189,24 +2261,24 @@ EVCouplings lib uses the canonical alphabet by default.</p>
 
 
 <h4 id="evo_prot_grad.experts.onehot_downstream_regression_expert.OneHotDownstreamRegressionExpert" class="doc doc-heading">
-        <code>evo_prot_grad.experts.onehot_downstream_regression_expert.OneHotDownstreamRegressionExpert</code>
+          <code>evo_prot_grad.experts.onehot_downstream_regression_expert.OneHotDownstreamRegressionExpert</code>
 
 
 </h4>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.AttributeExpert" href="#evo_prot_grad.experts.base_experts.AttributeExpert">AttributeExpert</a></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.AttributeExpert" href="#evo_prot_grad.experts.base_experts.AttributeExpert">AttributeExpert</a></code></p>
 
   
       <p>Basic one-hot regression expert.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -2228,6 +2300,8 @@ EVCouplings lib uses the canonical alphabet by default.</p>
 
   <div class="doc doc-contents ">
   
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2319,6 +2393,137 @@ a OneHotTokenizer will be constructed. Defaults to None.</p>
 </div>
 
 
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.experts.onehot_downstream_regression_expert.OneHotDownstreamRegressionExpert.set_wt_score" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">set_wt_score</span><span class="p">(</span><span class="n">wt_seq</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Sets the score value for wildtype protein wt_seq.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>wt_seq</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The wildtype sequence.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.experts.onehot_downstream_regression_expert.OneHotDownstreamRegressionExpert.__call__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__call__</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>inputs</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of protein sequence strings of len [parallel_chains].</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>oh</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>of shape [parallel_chains, seq_len, vocab_size]</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>score</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>of shape [parallel_chains]</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
 
   </div>
 
@@ -2362,10 +2567,10 @@ a OneHotTokenizer will be constructed. Defaults to None.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "toc.integrate", "header.autohide"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "toc.integrate", "header.autohide"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a51614de.min.js"></script>
+      <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>
       
         
           <script src="../../javascripts/mathjax.js"></script>

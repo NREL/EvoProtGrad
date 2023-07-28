@@ -21,7 +21,7 @@
         <link rel="next" href="../utils/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.16">
+      <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.eebd395e.min.css">
       
       
 
@@ -580,24 +580,24 @@
 
 
 <h4 id="evo_prot_grad.common.tokenizers.ExpertTokenizer" class="doc doc-heading">
-        <code>evo_prot_grad.common.tokenizers.ExpertTokenizer</code>
+          <code>evo_prot_grad.common.tokenizers.ExpertTokenizer</code>
 
 
 </h4>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code>abc.<span title="abc.ABC">ABC</span></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code>abc.<span title="abc.ABC">ABC</span></code></p>
 
   
       <p>Base interface for custom Expert tokenizers.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -619,6 +619,8 @@
 
   <div class="doc doc-contents ">
   
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -652,6 +654,7 @@
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -669,6 +672,8 @@
   <div class="doc doc-contents ">
   
       <p>Convert seqs to one hot tensors.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -698,6 +703,8 @@
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -724,6 +731,7 @@
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -741,6 +749,8 @@
   <div class="doc doc-contents ">
   
       <p>Convert one-hot tensors back to a list of string sequences.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -769,6 +779,8 @@
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -810,24 +822,24 @@
 
 
 <h4 id="evo_prot_grad.common.tokenizers.OneHotTokenizer" class="doc doc-heading">
-        <code>evo_prot_grad.common.tokenizers.OneHotTokenizer</code>
+          <code>evo_prot_grad.common.tokenizers.OneHotTokenizer</code>
 
 
 </h4>
 
 
   <div class="doc doc-contents first">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.common.tokenizers.ExpertTokenizer" href="#evo_prot_grad.common.tokenizers.ExpertTokenizer">ExpertTokenizer</a></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.common.tokenizers.ExpertTokenizer" href="#evo_prot_grad.common.tokenizers.ExpertTokenizer">ExpertTokenizer</a></code></p>
 
   
       <p>Converts a string of amino acids into one-hot tensors.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -849,6 +861,8 @@
 
   <div class="doc doc-contents ">
   
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -882,6 +896,7 @@
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -895,7 +910,10 @@
   <div class="doc doc-contents ">
   
       <p>Convert seqs to one hot tensors.
-Assumes each sequence is the same length.</p>
+Assumes each sequence is the same length. Handles sequences
+with spaces between amino acids.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -925,6 +943,8 @@ Assumes each sequence is the same length.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -951,6 +971,7 @@ Assumes each sequence is the same length.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -963,7 +984,10 @@ Assumes each sequence is the same length.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Convert one-hot tensors back to a list of string sequences.</p>
+      <p>Convert one-hot tensors back to a list of string sequences with 
+a space between each amino acid.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -992,6 +1016,8 @@ Assumes each sequence is the same length.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1063,10 +1089,10 @@ Assumes each sequence is the same length.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.sections", "toc.integrate", "header.autohide"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.sections", "toc.integrate", "header.autohide"], "search": "../../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.a51614de.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.220ee61c.min.js"></script>
       
         
           <script src="../../../javascripts/mathjax.js"></script>
