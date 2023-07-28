@@ -105,7 +105,7 @@ class DirectedEvolution:
         """
         if self.random_seed is not None:
             utils.set_seed(self.random_seed)
-
+        
         # the current state of each chain in string form
         self.chains = [self.wtseq] * self.parallel_chains
         # the current state of each chain in one-hot form
@@ -302,8 +302,9 @@ class DirectedEvolution:
             best_idxs = torch.stack(self.PoE_history).argmax(0)
             chains_oh_history = torch.stack(self.chains_oh_history) # [n_steps, n_chains, seq_len, n_tokens]
             output_ = self.canonical_chain_tokenizer.decode(
-                torch.stack([chains_oh_history[best_idxs[i],i] for i in range(self.parallel_chains)]) )
-            scores_ = torch.stack(self.PoE_history)[best_idxs].detach().cpu().numpy()
+                torch.stack([chains_oh_history[best_idxs[i],i] for i in range(self.parallel_chains)]))
+            scores_ = torch.stack(
+                [self.PoE_history[best_idxs[i]][i] for i in range(self.parallel_chains)]).detach().cpu().numpy()
         return output_, scores_
 
 

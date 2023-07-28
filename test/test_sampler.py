@@ -2,7 +2,7 @@ import unittest
 from transformers import AutoModel
 from evo_prot_grad import get_expert
 from evo_prot_grad.common.sampler import DirectedEvolution
-
+import numpy as np
 
 class TestSampler(unittest.TestCase):
     
@@ -131,6 +131,10 @@ class TestSampler(unittest.TestCase):
             wt_fasta='test/gfp.fasta'
         )()
         self.assertEqual(len(epg), 2)
+        variants, scores = epg
+        self.assertEqual(len(variants), 2)
+        self.assertEqual(len(scores), 2)
+        self.assertTrue(isinstance(scores[0], np.float32), "Score is not a float, {}".format(type(scores[0])))
 
         # Test 'last'
         epg = DirectedEvolution(

@@ -35,13 +35,14 @@ class BERTExpert(HuggingFaceExpert):
             model = BertForMaskedLM.from_pretrained("Rostlab/prot_bert")
             tokenizer = BertTokenizer.from_pretrained("Rostlab/prot_bert", do_lower_case=False)
         elif model is None or tokenizer is None:
-            raise ValueError("BERTExpert requires both `model` and `tokenizer` to be specified.")        
+            raise ValueError("BERTExpert requires both `model` and `tokenizer` to be specified.")  
         super().__init__(
             temperature,
             model,
-            tokenizer,
+            tokenizer.get_vocab(),
             device,
             use_without_wildtype)
+        self.tokenizer = tokenizer
         self.model.bert.embeddings.word_embeddings = embeddings.OneHotEmbedding(model.bert.embeddings.word_embeddings)
 
     def _get_last_one_hots(self) -> torch.Tensor:

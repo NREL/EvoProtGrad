@@ -1,8 +1,7 @@
 import torch 
 import torch.nn as nn
-from typing import List, Tuple, Union, Optional, Any
+from typing import List, Tuple, Dict, Optional, Any
 from abc import ABC, abstractmethod
-from transformers import PreTrainedTokenizerBase
 import evo_prot_grad.common.utils as utils
 import evo_prot_grad.common.tokenizers as tokenizers
 
@@ -14,7 +13,7 @@ class Expert(ABC):
         self,
         temperature: float,
         model: nn.Module,
-        tokenizer: Union[PreTrainedTokenizerBase, tokenizers.ExpertTokenizer],
+        vocab: Dict,
         device: str = "cpu",
         use_without_wildtype: bool = False
     ):
@@ -22,8 +21,7 @@ class Expert(ABC):
         Args:
             temperature (float): Hyperparameter for re-scaling this expert in the Product of Experts.
             model (nn.Module): The model to use for the expert.
-            tokenizer (Union[PreTrainedTokenizerBase, tokenizers.ExpertTokenizer]):
-                The tokenizer to use for the expert.
+            vocab (Dict): The vocabulary for the expert.
             device (str): The device to use for the expert.
             use_without_wildtype (bool): Whether to use the expert without the wildtype,
                 i.e., do not subtract the wildtype score from the expert score.
@@ -34,13 +32,10 @@ class Expert(ABC):
         self.use_without_wildtype = use_without_wildtype
         self.model.to(self.device)
         self.model.eval()
-
-        vocab = tokenizer.get_vocab()
+                
         # sort by vocab values
         self.alphabet = [k for k, v in sorted(vocab.items(), key=lambda item: item[1])]
-        self.tokenizer = tokenizer 
 
-        #self.alphabet = alphabet
         self.expert_to_canonical_order = utils.expert_alphabet_to_canonical(
                                          self.alphabet, self.device)
         
@@ -123,18 +118,18 @@ class HuggingFaceExpert(Expert):
     def __init__(self,
                  temperature: float, 
                  model: nn.Module,
-                 tokenizer: PreTrainedTokenizerBase,
+                 vocab: Dict,
                  device: str,
                  use_without_wildtype: bool):
         """
         Args:
             temperature (float): Hyperparameter for re-scaling this expert in the Product of Experts.
             model (nn.Module): The model to use for the expert.
-            tokenizer (PreTrainedTokenizerBase): The tokenizer to use for the expert.
+            vocab (Dict): The vocab to use for the expert.
             device (str): The device to use for the expert.
             use_without_wildtype (bool): Whether to use the expert without the wildtype.
         """
-        super().__init__(temperature, model, tokenizer, device, use_without_wildtype)
+        super().__init__(temperature, model, vocab, device, use_without_wildtype)
 
 
     def set_wt_score(self, wt_seq: str) -> None:
@@ -210,7 +205,8 @@ class AttributeExpert(Expert):
         """
         if tokenizer is None:
             tokenizer = tokenizers.OneHotTokenizer(utils.CANONICAL_ALPHABET)
-        super().__init__(temperature, model, tokenizer, device, use_without_wildtype)
+        super().__init__(temperature, model, tokenizer.get_vocab(), device, use_without_wildtype)
+        self.tokenizer = tokenizer
 
     def set_wt_score(self, wt_seq: str) -> None:
         """Sets the score value for wildtype protein wt_seq.

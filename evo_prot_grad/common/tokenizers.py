@@ -54,7 +54,8 @@ class OneHotTokenizer(ExpertTokenizer):
 
     def __call__(self, seqs: List[str]) -> torch.FloatTensor:
         """Convert seqs to one hot tensors.
-        Assumes each sequence is the same length.
+        Assumes each sequence is the same length. Handles sequences
+        with spaces between amino acids.
 
         Args:
             seqs (List[str]): A list of protein sequence strings of len [parallel_chains].
@@ -69,7 +70,8 @@ class OneHotTokenizer(ExpertTokenizer):
 
 
     def decode(self, ohs: torch.Tensor) -> List[str]:
-        """Convert one-hot tensors back to a list of string sequences.
+        """Convert one-hot tensors back to a list of string sequences with 
+        a space between each amino acid.
 
         Args:
             ohs (torch.Tensor): shape [parallel_chains, seq_len, vocab_size]

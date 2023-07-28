@@ -38,9 +38,10 @@ class EsmExpert(HuggingFaceExpert):
         super().__init__(
             temperature,
             model,
-            tokenizer,
+            tokenizer.get_vocab(),
             device,
             use_without_wildtype)
+        self.tokenizer = tokenizer 
         self.model.esm.embeddings.word_embeddings = embeddings.OneHotEmbedding(model.esm.embeddings.word_embeddings)
 
     def _get_last_one_hots(self) -> torch.Tensor:

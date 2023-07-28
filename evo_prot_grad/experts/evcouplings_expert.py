@@ -30,12 +30,13 @@ class EVCouplingsExpert(Expert):
             tokenizer = OneHotTokenizer(utils.CANONICAL_ALPHABET)
         super().__init__(temperature,
                          model, 
-                         tokenizer=tokenizer,
+                         tokenizer.get_vocab(),
                          device=device,
                          use_without_wildtype=use_without_wildtype)
         assert model.alphabet == self.alphabet, \
             f"EVcouplings alphabet {model.alphabet} should match our canonical alphabet {self.alphabet}"
-
+        self.tokenizer = tokenizer
+        
     def set_wt_score(self, wt_seq: str) -> None:
         """Sets the wildtype score value for protein wt_seq
         """

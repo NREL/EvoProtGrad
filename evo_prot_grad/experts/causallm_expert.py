@@ -31,16 +31,20 @@ class CausalLMExpert(HuggingFaceExpert):
         """
         if model is None and tokenizer is None:
             model = AutoModelForCausalLM.from_pretrained("lightonai/RITA_s", trust_remote_code=True)
-            tokenizer = AutoTokenizer.from_pretrained("lightonai/RITA_s")
+            tokenizer = AutoTokenizer.from_pretrained("lightonai/RITA_s", )
         elif model is None or tokenizer is None:
             raise ValueError("CausalLMExpert requires both `model` and `tokenizer` to be specified.")
+        vocab = tokenizer.get_vocab()
+        if '<unk>' in vocab:
+            vocab.pop('<unk>')
         super().__init__(
             temperature = temperature,
             model = model,
-            tokenizer = tokenizer,
+            vocab = vocab,
             device = device,
             use_without_wildtype = use_without_wildtype
         )
+        self.tokenizer = tokenizer
         self.model.transformer.embedding = embeddings.OneHotEmbedding(model.transformer.embedding)
 
     def _get_last_one_hots(self):
@@ -56,6 +60,8 @@ class CausalLMExpert(HuggingFaceExpert):
         Returns:
             batch_encoding (BatchEncoding): A BatchEncoding object.
         """
+        # Remove all spaces between amino acids 
+        inputs = [seq.replace(' ', '') for seq in inputs]
         return self.tokenizer(inputs, add_special_tokens=False, return_tensors="pt").to(self.device)
    
 def build(**kwargs):
