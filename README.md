@@ -31,6 +31,9 @@ pip install -e .
 
 ## Basic Usage
 
+See `demo.ipynb` to get started right away in a Jupyter notebook or <a target="_blank" href="https://colab.research.google.com/drive/1e8WjYEbWiikRQg3g4YHQJJcpvTIWVAjp?usp=sharing">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+  
 Create a `ProtBERT` expert from a pretrained HuggingFace protein language model (PLM) using `evo_prot_grad.get_expert`:
 
 ```python
@@ -69,8 +72,6 @@ Potts models
 and an generic expert for supervised downstream regression models
 
 - `onehot_downstream_regression`
-
-See `demo.ipynb` to get started right away in a Jupyter notebook.
 
 ## Citation
 
