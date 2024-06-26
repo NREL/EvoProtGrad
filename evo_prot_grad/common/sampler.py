@@ -67,7 +67,7 @@ class DirectedEvolution:
             utils.set_seed(random_seed)
         if self.preserved_regions is not None:
             for start, end in self.preserved_regions:
-                if end - start < 1:
+                if end - start < 0:
                     raise ValueError("Preserved regions must be at least 1 amino acid long")
                 
         # maintains a tokenizer with canonical alphabet
