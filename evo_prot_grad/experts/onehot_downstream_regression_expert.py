@@ -9,27 +9,29 @@ class OneHotDownstreamRegressionExpert(AttributeExpert):
     """ Basic one-hot regression expert."""
     def __init__(self, 
                  temperature: float,
+                 scoring_strategy: str,
                  model: Module,
                  device: str,
-                 tokenizer: Optional[OneHotTokenizer] = None,
-                 use_without_wildtype: bool = False):
+                 tokenizer: Optional[OneHotTokenizer] = None):
         """
         Args:
             temperature (float): Temperature for sampling from the expert.
+            scoring_strategy (str): Approach for scoring variants that the expert will use.
             model (Module): The model to use for the expert.
             device (str): The device to use for the expert.
             tokenizer (Optional[OneHotTokenizer], optional): The tokenizer to use for the expert. If None,
                 a OneHotTokenizer will be constructed. Defaults to None.
-            use_without_wildtype (bool): Whether to use the expert without the wildtype. Defaults to False.
         """
         if tokenizer is None:
             tokenizer = OneHotTokenizer(utils.CANONICAL_ALPHABET)
+        assert scoring_strategy == "attribute_value"
         super().__init__(temperature,
                         model,
+                        scoring_strategy,
                         device,
-                        use_without_wildtype,
                         tokenizer)
         
+
 def build(**kwargs):
     """Builds a OneHotDownstreamExpert."""
     return OneHotDownstreamRegressionExpert(**kwargs)

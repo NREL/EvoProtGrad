@@ -45,7 +45,7 @@ Uniquely to `EvoProtGrad`, as long *all* experts are *differentiable*, our sampl
 `EvoProtGrad` provides a convenient interface for defining and using experts from the HuggingFace Hub.
 To use pretrained PLMs from the HuggingFace Hub with gradient-based discrete MCMC, we swap out each transformer's token embedding layer for a custom [one-hot token embedding layer](https://nrel.github.io/EvoProtGrad/api/common/embeddings/#onehotembedding). This enables us to compute and access gradients with respect to one-hot input protein sequences.
 
-We provide a baseclass `evo_prot_grad.experts.base_experts.HuggingFaceExpert` which is subclassed to support various types of HuggingFace PLMs. Currently, we provide three subclasses for
+We provide a baseclass `evo_prot_grad.experts.base_experts.ProteinLMExpert` which is subclassed to support various types of HuggingFace PLMs. Currently, we provide three subclasses for
 
 - BERT-style PLMs (`evo_prot_grad.experts.bert_expert.BertExpert`)
 - CausalLM-style PLMs (`evo_prot_grad.experts.causallm_expert.CausalLMExpert`)

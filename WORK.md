@@ -19,3 +19,5 @@ We would need to add a new expert for “EsmForSequenceClassification” to supp
 I like the idea of creating a file named something like `evo_prot_grad/common/mutation_scoring.py` where we could implement different scoring functions. Then, each HuggingFaceExpert could be paired with the mutation scoring method of choice via a `scoring_strategy` argument (similar to https://github.com/facebookresearch/esm/blob/main/examples/variant-prediction/predict.py). I’d have to think a bit about what the function signature for each mutation scoring method would be..
 
 - https://github.com/Amelie-Schreiber/protein_mutation_scoring/blob/main/scoring_esm2.py 
+
+- Update 6/17/24: I am not sure if there is a way to modify the input to an expert (e.g., by introducing masks at mutation positions) and still compute the gradient with respect to the one-hot input. The sampler uses the product of expert score to compute the gradient with respect to the one-hot input; modifying this input would break the gradient computation. I will need to investigate this further.

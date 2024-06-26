@@ -11,8 +11,8 @@
         members: ["__init__", "_tokenize", "_get_last_one_hots", "_model_output_to_scalar_score", "set_wt_score", "__call__"]
 
 
-## HuggingFaceExpert
-::: evo_prot_grad.experts.base_experts.HuggingFaceExpert
+## ProteinLMExpert
+::: evo_prot_grad.experts.base_experts.ProteinLMExpert
     options:
         show_source: false
         heading_level: 4

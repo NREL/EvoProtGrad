@@ -4,29 +4,29 @@ from typing import Optional, List
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 from transformers import EsmForMaskedLM
 from transformers.tokenization_utils_base import BatchEncoding
-from evo_prot_grad.experts.base_experts import HuggingFaceExpert
+from evo_prot_grad.experts.base_experts import ProteinLMExpert
 import evo_prot_grad.common.embeddings as embeddings
 
 
-class EsmExpert(HuggingFaceExpert):
+class EsmExpert(ProteinLMExpert):
     """Expert baseclass for HuggingFace protein language models from the ESM family.
-    Implements abstract methods `_get_last_one_hots` and `_tokenize`.
+    Implements abstract methods `_get_last_one_hots` and `tokenize`.
     Swaps out the `EsmForMaskedLM.esm.embeddings.word_embeddings` layer
     for a `evo_prot_grad.common.embeddings.OneHotEmbedding` layer.
     """
     def __init__(self,
                  temperature: float,
+                 scoring_strategy: str,
                  model: Optional[nn.Module] = None,
                  tokenizer: Optional[PreTrainedTokenizerBase] = None,
-                 device: str = 'cpu',
-                 use_without_wildtype: bool = False):
+                 device: str = 'cpu'):
         """
         Args:
             temperature (float): Temperature for sampling from the expert.
+            scoring_strategy (str): Approach for scoring variants that the expert will use.
             model (nn.Module): The model to use for the expert. Defaults to EsmForMaskedLM from facebook/esm2_t6_8M_UR50D.
             tokenizer (PreTrainedTokenizerBase): The tokenizer to use for the expert. Defaults to AutoTokenizer from facebook/esm2_t6_8M_UR50D.
             device (str): The device to use for the expert. Defaults to 'cpu'.
-            use_without_wildtype (bool): Whether to use the expert without the wildtype.
         Raises:
             ValueError: If either `model` or `tokenizer` is not specified.
         """
@@ -39,17 +39,19 @@ class EsmExpert(HuggingFaceExpert):
             temperature,
             model,
             tokenizer.get_vocab(),
-            device,
-            use_without_wildtype)
+            scoring_strategy,
+            device)
         self.tokenizer = tokenizer 
         self.model.esm.embeddings.word_embeddings = embeddings.OneHotEmbedding(model.esm.embeddings.word_embeddings)
+
 
     def _get_last_one_hots(self) -> torch.Tensor:
         """ Returns the one-hot tensors *most recently passed* as input.
         """
         return self.model.esm.embeddings.word_embeddings.one_hots
 
-    def _tokenize(self, inputs: List[str]) -> BatchEncoding:
+
+    def tokenize(self, inputs: List[str]) -> BatchEncoding:
         """Convert inputs to a format suitable for the model.
 
         Args:

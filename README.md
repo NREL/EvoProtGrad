@@ -21,13 +21,17 @@ EvoProtGrad is available on PyPI and can be installed with pip:
 pip install evo_prot_grad
 ```
 
-If you wish to run tests or register a new expert model with EvoProtGrad, please clone this repo and install in editable mode as follows:
+For the bleeding edge version, and/or if you wish to run tests or register a new expert model with EvoProtGrad, please clone this repo and install in editable mode as follows:
 
 ```bash
 git clone https://github.com/NREL/EvoProtGrad.git
 cd EvoProtGrad
 pip install -e .
 ```
+
+## Run tests
+
+Test the code by running `python3 -m unittest`.
 
 ## Basic Usage
 
