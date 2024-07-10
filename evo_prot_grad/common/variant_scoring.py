@@ -8,10 +8,10 @@ class VariantScoring:
 
     Supported scoring strategies
 
-    1) Attribute value: Uses a model's predicted attribute value for a given variant,
+    1) `attribute_value`: Uses a model's predicted attribute value for a given variant,
         normalized by subtracting the wildtype's predicted value.
-    2) Pseudo-log-likelihood ratio
-    3) Mutant marginal 
+    2) `pseudolikelihood_ratio`
+    3) `mutant_marginal` 
     """
     def __init__(self, scoring_strategy: str):
         self.scoring_strategy = scoring_strategy

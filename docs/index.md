@@ -24,17 +24,24 @@ cd EvoProtGrad
 pip install -e .
 ```
 
+## Run tests
+
+Test the code by running `python3 -m unittest`.
+
 ## Quick Start
+
+Check out our Colab demo: <a target="_blank" href="https://colab.research.google.com/drive/1e8WjYEbWiikRQg3g4YHQJJcpvTIWVAjp?usp=sharing">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 
 Create a `ProtBERT` expert from a pretrained HuggingFace protein language model (PLM) using `evo_prot_grad.get_expert`:
 
 ```python
 import evo_prot_grad
 
-prot_bert_expert = evo_prot_grad.get_expert('bert', temperature = 1.0)
+prot_bert_expert = evo_prot_grad.get_expert('bert', scoring_strategy = 'pseudolikelihood_ratio', temperature = 1.0)
 ```
 
-The default BERT-style PLM in `EvoProtGrad` is `Rostlab/prot_bert`. Normally, we would need to also specify the model and tokenizer. When using a default PLM expert, we automatically pull these from the HuggingFace Hub. The temperature parameter rescales the expert scores and can be used to trade off the importance of different experts. For masked language models like `prot_bert`, we score variant sequences with the sum of amino acid log probabilities by default.
+The default BERT-style PLM in `EvoProtGrad` is `Rostlab/prot_bert`. Normally, we would need to also specify the model and tokenizer. When using a default PLM expert, we automatically pull these from the HuggingFace Hub. The temperature parameter rescales the expert scores and can be used to trade off the importance of different experts. For protein language models like `prot_bert`, we have implemented two scoring strategies: `pseudolikelihood_ratio` and `mutant_marginal`. The `pseudolikelihood_ratio` strategy computes the ratio of the "pseudo" log-likelihood (this isn't the exact log-likelihood when the protein language model is a *masked* language model) of the wild type and mutant sequence.
 
 Then, create an instance of `DirectedEvolution` and run the search, returning a list of the best variant per Markov chain (as measured by the `prot_bert` expert):
 
@@ -66,7 +73,7 @@ and an generic expert for supervised downstream regression models
 
 - `onehot_downstream_regression`
 
-See `demo.ipynb` to get started right away in a Jupyter notebook.
+See [`demo.ipynb`](https://github.com/NREL/EvoProtGrad/blob/main/demo.ipynb) to get started right away in a Jupyter notebook.
 
 ## Citation
 

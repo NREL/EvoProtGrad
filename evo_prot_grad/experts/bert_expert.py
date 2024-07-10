@@ -11,7 +11,7 @@ import evo_prot_grad.common.embeddings as embeddings
 
 class BERTExpert(ProteinLMExpert):
     """Expert sub-class for BERT-style HuggingFace protein language models.
-    Implements abstract methods `_get_last_one_hots` and `_tokenize`.
+    Implements abstract methods `_get_last_one_hots` and `tokenize`.
     Swaps out the `BertForMaskedLM.bert.embeddings.word_embeddings` layer
     for a `evo_prot_grad.common.embeddings.OneHotEmbedding` layer. 
     """

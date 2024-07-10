@@ -77,6 +77,7 @@ def expert_alphabet_to_canonical(expert_alphabet: List[str], device: str) -> tor
 
 def set_seed(seed: int) -> None:
     """Set random seed for reproducibility.
+
     Args:
         seed (int): The seed to set.
     """
@@ -87,7 +88,13 @@ def set_seed(seed: int) -> None:
 
 
 def print_variant_in_color(seq: str, wt: str, ignore_gaps: bool = True) -> None:
-    """Print a variant in color."""
+    """Print a variant sequence with highlighted mutations.
+    
+    Args:
+        seq (str): The variant sequence.
+        wt (str): The wildtype sequence.
+        ignore_gaps (bool): If True, ignore gaps (`-` or `X`) in the comparison. Default: True.
+    """
     for j in range(len(wt)):
         if seq[j] != wt[j]:
             if ignore_gaps and (seq[j] == '-' or seq[j] == 'X'):
