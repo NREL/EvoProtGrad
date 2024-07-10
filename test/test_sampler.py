@@ -9,6 +9,7 @@ class TestSampler(unittest.TestCase):
     def setUp(self):
         self.gfp_expert = get_expert(
             'onehot_downstream_regression',
+            'attribute_value',
             1.0,
             AutoModel.from_pretrained('NREL/avGFP-fluorescence-onehot-cnn',
                                        trust_remote_code=True))

@@ -24,5 +24,20 @@
         heading_level: 4
         show_root_heading: true
 
+::: evo_prot_grad.common.utils.set_seed
+    options:
+        show_source: false
+        heading_level: 4
+        show_root_heading: true
 
+::: evo_prot_grad.common.utils.print_variant_in_color
+    options:
+        show_source: false
+        heading_level: 4
+        show_root_heading: true
 
+::: evo_prot_grad.common.utils.read_fasta
+    options:
+        show_source: false
+        heading_level: 4
+        show_root_heading: true

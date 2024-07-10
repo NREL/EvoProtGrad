@@ -1,6 +1,7 @@
 import unittest 
 from evo_prot_grad import get_expert
 from evo_prot_grad.models import EVCouplings
+import evo_prot_grad.common.utils as utils
 from transformers import AutoModel
 
 
@@ -15,25 +16,27 @@ class TestExperts(unittest.TestCase):
         Test that get_expert works with all experts.
         """
         experts = ['esm', 'bert', 'causallm']
+        scoring_strategies = ['mutant_marginal'] * 3
 
-        for expert in experts:
-            e = get_expert(expert, use_without_wildtype=True)
-
+        for expert, ss in zip(experts, scoring_strategies):
+            e = get_expert(expert, ss)
+            e.init_wildtype(utils.read_fasta('test/gfp.fasta'))
+            
             out = e(self.sequence)
 
     def test_get_expert_custom(self):
         evcouplings_model = EVCouplings(
            'test/PABP_YEAST.model_params',
            'test/gfp.fasta')
-        e = get_expert('evcouplings', 1.0,
-                       evcouplings_model,
-                       use_without_wildtype=True)
+        e = get_expert('evcouplings', 'attribute_value', 1.0,
+                       evcouplings_model)
+        e.init_wildtype(utils.read_fasta('test/gfp.fasta'))
         out = e(self.sequence)
 
         onehot_model = AutoModel.from_pretrained('NREL/avGFP-fluorescence-onehot-cnn', trust_remote_code=True)
 
         e = get_expert(
-                'onehot_downstream_regression', 1.0,
-                onehot_model,
-                use_without_wildtype=True)
+                'onehot_downstream_regression', 'attribute_value', 1.0,
+                onehot_model)
+        e.init_wildtype(utils.read_fasta('test/gfp.fasta'))        
         out = e(self.sequence)

@@ -44,6 +44,7 @@ nav:
       - api/common/sampler.md
       - api/common/tokenizers.md
       - api/common/utils.md
+      - api/common/variant_scoring.md
       
 extra_css:
     - css/extra.css

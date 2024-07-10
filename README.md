@@ -21,13 +21,17 @@ EvoProtGrad is available on PyPI and can be installed with pip:
 pip install evo_prot_grad
 ```
 
-If you wish to run tests or register a new expert model with EvoProtGrad, please clone this repo and install in editable mode as follows:
+For the bleeding edge version, and/or if you wish to run tests or register a new expert model with EvoProtGrad, please clone this repo and install in editable mode as follows:
 
 ```bash
 git clone https://github.com/NREL/EvoProtGrad.git
 cd EvoProtGrad
 pip install -e .
 ```
+
+## Run tests
+
+Test the code by running `python3 -m unittest`.
 
 ## Basic Usage
 
@@ -39,9 +43,10 @@ Create a `ProtBERT` expert from a pretrained HuggingFace protein language model 
 ```python
 import evo_prot_grad
 
-prot_bert_expert = evo_prot_grad.get_expert('bert', temperature = 1.0)
+prot_bert_expert = evo_prot_grad.get_expert('bert', scoring_strategy = 'pseudolikelihood_ratio', temperature = 1.0)
 ```
-The default BERT-style PLM in `EvoProtGrad` is `Rostlab/prot_bert`. Normally, we would need to also specify the model and tokenizer. When using a default PLM expert, we automatically pull these from the HuggingFace Hub. The temperature parameter rescales the expert scores and can be used to trade off the importance of different experts. For masked language models like `prot_bert`, we score variant sequences with the sum of amino acid log probabilities by default.
+
+The default BERT-style PLM in `EvoProtGrad` is `Rostlab/prot_bert`. Normally, we would need to also specify the model and tokenizer. When using a default PLM expert, we automatically pull these from the HuggingFace Hub. The temperature parameter rescales the expert scores and can be used to trade off the importance of different experts. The `pseudolikelihood_ratio` strategy computes the ratio of the "pseudo" log-likelihood (this isn't the exact log-likelihood when the protein language model is a *masked* language model) of the wild type and mutant sequence.
 
 Then, create an instance of `DirectedEvolution` and run the search, returning a list of the best variant per Markov chain (as measured by the `prot_bert` expert):
 

@@ -1,12 +1,12 @@
 import abc
 import torch 
-from typing import List
+from typing import List, Dict
 
 
 class ExpertTokenizer(abc.ABC):
     """Base interface for custom Expert tokenizers.
     """
-    def __init__(self, alphabet: List[str]):
+    def __init__(self, alphabet: List[str]) -> None:
         """
         Args:
             alphabet (List[str]): A list of amino acid characters.
@@ -15,7 +15,8 @@ class ExpertTokenizer(abc.ABC):
         self.vocab_size = len(alphabet)
         self.vocab = {aa: i for i, aa in enumerate(alphabet)}
 
-    def get_vocab(self):
+    def get_vocab(self) -> Dict:
+        """Return the vocab, a mapping of amino acid characters to integers."""
         return self.vocab
 
     @abc.abstractmethod

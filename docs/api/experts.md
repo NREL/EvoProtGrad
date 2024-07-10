@@ -8,16 +8,16 @@
         show_source: false
         heading_level: 4
         show_root_heading: true
-        members: ["__init__", "_tokenize", "_get_last_one_hots", "_model_output_to_scalar_score", "set_wt_score", "__call__"]
+        members: ["__init__", "_get_last_one_hots", "init_wildtype", "tokenize", "get_model_output", "__call__"]
 
 
-## HuggingFaceExpert
-::: evo_prot_grad.experts.base_experts.HuggingFaceExpert
+## ProteinLMExpert
+::: evo_prot_grad.experts.base_experts.ProteinLMExpert
     options:
         show_source: false
         heading_level: 4
         show_root_heading: true
-        members: ["__init__", "_model_output_to_scalar_score", "set_wt_score", 
+        members: ["__init__", "get_model_output", 
         "__call__"]
 
 ## BERTExpert
@@ -26,7 +26,7 @@
         show_source: false
         heading_level: 4
         show_root_heading: true
-        members: ["__init__", "_tokenize", "_get_last_one_hots"]
+        members: ["__init__", "_get_last_one_hots", "tokenize"]
 
 ## CausalLMExpert
 ::: evo_prot_grad.experts.causallm_expert.CausalLMExpert
@@ -34,7 +34,7 @@
         show_source: false
         heading_level: 4
         show_root_heading: true
-        members: ["__init__", "_tokenize", "_get_last_one_hots"]
+        members: ["__init__", "_get_last_one_hots", "tokenize"]
 
 ## EsmExpert
 ::: evo_prot_grad.experts.esm_expert.EsmExpert
@@ -42,7 +42,7 @@
         show_source: false
         heading_level: 4
         show_root_heading: true
-        members: ["__init__", "_tokenize", "_get_last_one_hots"]
+        members: ["__init__", "_get_last_one_hots", "tokenize"]
 
 ## AttributeExpert
 ::: evo_prot_grad.experts.base_experts.AttributeExpert
@@ -50,7 +50,7 @@
         show_source: false
         heading_level: 4
         show_root_heading: true
-        members: ["__init__", "_tokenize", "_model_output_to_scalar_score", "set_wt_score", "__call__"]
+        members: ["__init__", "tokenize", "get_model_output", "_get_last_one_hots", "__call__"]
 
 ---
 

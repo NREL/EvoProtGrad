@@ -1,7 +1,6 @@
 from typing import List, Tuple, Optional
 import torch
 import numpy as np
-from pathlib import Path
 from evo_prot_grad.experts.base_experts import Expert
 import evo_prot_grad.common.utils as utils
 import evo_prot_grad.common.tokenizers as tokenizers
@@ -85,13 +84,7 @@ class DirectedEvolution:
                 self.wtseq = ' '.join(self.wtseq)
         # Check if wt_protein is a fasta file
         elif self.wt_fasta is not None:
-            with open(Path(self.wt_fasta), 'r') as f:
-                for line in f:
-                    if line[0] != '>':
-                        self.wtseq = line.strip()
-                        # Add a space between each amino acid
-                        self.wtseq = ' '.join(self.wtseq)
-                        break          
+            self.wtseq = utils.read_fasta(self.wt_fasta)
         if self.verbose:
             print(f">Wildtype sequence: {self.wtseq}")
         self.reset()
@@ -106,7 +99,8 @@ class DirectedEvolution:
         if self.random_seed is not None:
             utils.set_seed(self.random_seed)
         
-        # the current state of each chain in string form
+        # the current state of each chain in string form. 
+        # Initially a list of length `parallel_chains` of the WT sequence.
         self.chains = [self.wtseq] * self.parallel_chains
         # the current state of each chain in one-hot form
         self.chains_oh = self.canonical_chain_tokenizer(self.chains).to(self.device)
@@ -118,10 +112,9 @@ class DirectedEvolution:
         self.chains_oh_history = []
 
         for expert in self.experts:
-            expert.set_wt_score(self.wtseq)
+            expert.init_wildtype(self.wtseq)
 
         
-
     def _product_of_experts(self, inputs: List[str]) -> Tuple[List[torch.Tensor], torch.Tensor]:
         """Compute the product of experts.
         Computes each expert score, multiplies it by
@@ -146,13 +139,15 @@ class DirectedEvolution:
 
     def _compute_gradients(self, ohs: List[torch.Tensor], PoE: torch.Tensor) -> torch.Tensor:
         """Compute the gradients of the product of experts
-        with respect to the one-hots. We put each experts one-hot input 
-        sequence in a canonical order before summing gradients together. 
+        with respect to the one-hots. We put each expert's amino acid alphabet,
+        used to construct one-hot inputs, in a canonical order before summing gradients together. 
 
         Args:
             ohs (List[torch.Tensor]): tensor one-hot embeddings of shape [parallel_chains, seq_len, vocab_size].
                  List is of length # experts
             PoE (torch.Tensor): product of experts score of shape [parallel_chains]
+        Returns:
+            grads (torch.Tensor): gradients of the product of experts with respect to the one-hots.
         """
         # sum over chains
         oh_grads = torch.autograd.grad(PoE.sum(), ohs)

@@ -5,29 +5,29 @@ import torch.nn as nn
 from transformers import PreTrainedTokenizerBase
 from transformers import BertForMaskedLM, BertTokenizer
 from transformers.tokenization_utils_base import BatchEncoding
-from evo_prot_grad.experts.base_experts import HuggingFaceExpert
+from evo_prot_grad.experts.base_experts import ProteinLMExpert
 import evo_prot_grad.common.embeddings as embeddings
 
 
-class BERTExpert(HuggingFaceExpert):
+class BERTExpert(ProteinLMExpert):
     """Expert sub-class for BERT-style HuggingFace protein language models.
-    Implements abstract methods `_get_last_one_hots` and `_tokenize`.
+    Implements abstract methods `_get_last_one_hots` and `tokenize`.
     Swaps out the `BertForMaskedLM.bert.embeddings.word_embeddings` layer
     for a `evo_prot_grad.common.embeddings.OneHotEmbedding` layer. 
     """
     def __init__(self, 
                  temperature: float,
+                 scoring_strategy: str,
                  model: Optional[nn.Module] = None,
                  tokenizer: Optional[PreTrainedTokenizerBase] = None,
-                 device: str = 'cpu',
-                 use_without_wildtype: bool = False):
+                 device: str = 'cpu'):
         """
         Args:
             temperature (float): Temperature for sampling from the expert.
+            scoring_strategy (str): Approach for scoring variants that the expert will use.
             model (nn.Module): The model to use for the expert.
             tokenizer (PreTrainedTokenizerBase): The tokenizer to use for the expert. 
             device (str): The device to use for the expert. 
-            use_without_wildtype (bool): Whether to use the wildtype score as a baseline.
         Raises:
             ValueError: If either `model` or `tokenizer` is not specified.
         """
@@ -40,10 +40,11 @@ class BERTExpert(HuggingFaceExpert):
             temperature,
             model,
             tokenizer.get_vocab(),
-            device,
-            use_without_wildtype)
+            scoring_strategy,
+            device)
         self.tokenizer = tokenizer
         self.model.bert.embeddings.word_embeddings = embeddings.OneHotEmbedding(model.bert.embeddings.word_embeddings)
+
 
     def _get_last_one_hots(self) -> torch.Tensor:
         """ Returns the one-hot tensors *most recently passed* as input.
@@ -53,7 +54,8 @@ class BERTExpert(HuggingFaceExpert):
         """
         return self.model.bert.embeddings.word_embeddings.one_hots
 
-    def _tokenize(self, inputs) -> BatchEncoding:
+
+    def tokenize(self, inputs) -> BatchEncoding:
         """Convert inputs to a format suitable for the model.
         
         Args:
