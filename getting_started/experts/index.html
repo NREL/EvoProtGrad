@@ -329,8 +329,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#huggingface-transformers" class="md-nav__link">
-    🤗 HuggingFace Transformers
+  <a href="#huggingface-protein-language-models-plms" class="md-nav__link">
+    🤗 HuggingFace Protein Language Models (PLMs)
   </a>
   
 </li>
@@ -629,25 +629,25 @@ P(X) = \frac{1}{Z}  F(X) G(X)^{\lambda}
 <div class="arithmatex">\[
 \log P(X) = \log F(X) + \lambda \log G(X) - \log Z.
 \]</div>
-<p>In <code>EvoProtGrad</code>, the "score" of each expert corresponds to either <span class="arithmatex">\(\log F(X)\)</span> or <span class="arithmatex">\(\log G(X)\)</span> here. In most cases, we interpret the scalar output of a neural network as the score.
+<p>In <code>EvoProtGrad</code>, the <strong>score</strong>"** of each expert corresponds to either <span class="arithmatex">\(\log F(X)\)</span> or <span class="arithmatex">\(\log G(X)\)</span> here. In most cases, we interpret the scalar output of a neural network as the score.
 The magic of the Product of Experts formulation is that it enables us to compose arbitrary numbers of experts, essentially allowing us to "plug and play" with different experts to guide the search.</p>
 <p>In actuality, instead of just searching for a protein variant that maximizes <span class="arithmatex">\(P(X)\)</span>, <code>EvoProtGrad</code> uses gradient-based discrete MCMC to <em>sample</em> from <span class="arithmatex">\(P(X)\)</span>.
 MCMC is necessary for sampling from <span class="arithmatex">\(P(X)\)</span> because it is impractical to compute the partition function <span class="arithmatex">\(Z\)</span> exactly.
 Uniquely to <code>EvoProtGrad</code>, as long <em>all</em> experts are <em>differentiable</em>, our sampler can use the gradient of <span class="arithmatex">\(\log F(X) + \lambda \log G(X)\)</span> with respect to the one-hot protein <span class="arithmatex">\(X\)</span> to identify the most promising mutation to apply to <span class="arithmatex">\(X\)</span>, which vastly speeds up MCMC convergence.</p>
-<h2 id="huggingface-transformers">🤗 HuggingFace Transformers<a class="headerlink" href="#huggingface-transformers" title="Permanent link"></a></h2>
+<h2 id="huggingface-protein-language-models-plms">🤗 HuggingFace Protein Language Models (PLMs)<a class="headerlink" href="#huggingface-protein-language-models-plms" title="Permanent link"></a></h2>
 <p><code>EvoProtGrad</code> provides a convenient interface for defining and using experts from the HuggingFace Hub.
-To use pretrained PLMs from the HuggingFace Hub with gradient-based discrete MCMC, we swap out each transformer's token embedding layer for a custom <a href="https://nrel.github.io/EvoProtGrad/api/common/embeddings/#onehotembedding">one-hot token embedding layer</a>. This enables us to compute and access gradients with respect to one-hot input protein sequences.</p>
-<p>We provide a baseclass <code>evo_prot_grad.experts.base_experts.ProteinLMExpert</code> which is subclassed to support various types of HuggingFace PLMs. Currently, we provide three subclasses for</p>
+In detail, we modify pretrained PLMs from the HuggingFace Hub to use with gradient-based discrete MCMC by hot-swapping the Transformer's token embedding layer for a custom <a href="https://nrel.github.io/EvoProtGrad/api/common/embeddings/#onehotembedding">one-hot embedding layer</a>. This enables us to compute and access gradients with respect to one-hot protein sequences.</p>
+<p>We provide a baseclass <code>evo_prot_grad.experts.base_experts.ProteinLMExpert</code> which can be subclassed to support various types of HuggingFace PLMs. Currently, we provide three subclasses for</p>
 <ul>
 <li>BERT-style PLMs (<code>evo_prot_grad.experts.bert_expert.BertExpert</code>)</li>
 <li>CausalLM-style PLMs (<code>evo_prot_grad.experts.causallm_expert.CausalLMExpert</code>)</li>
 <li>ESM-style PLMs (<code>evo_prot_grad.experts.esm_expert.EsmExpert</code>)</li>
 </ul>
-<p>Each HuggingFace PLM expert has to specify the model and tokenizer to use. Defaults for each type of PLM are provided. </p>
-<p>For example, an ESM2 expert can be instantiated with <code>evo_prot_grad.get_expert</code> with only:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">esm2_expert</span> <span class="o">=</span> <span class="n">evo_prot_grad</span><span class="o">.</span><span class="n">get_expert</span><span class="p">(</span><span class="s1">&#39;esm&#39;</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+<p>To instantiate EvoProtGrad ProteinLMExperts, we provide a simple function <a href="https://nrel.github.io/EvoProtGrad/api/evo_prot_grad/#get_expert"><code>evo_prot_grad.get_expert</code></a>. The name of the expert, the variant scoring strategy, and the temperature for scaling the expert score must be provided. We provide defaults for the other arguments to <code>get_expert</code>.</p>
+<p>For example, an ESM2 expert can be instantiated with:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">esm2_expert</span> <span class="o">=</span> <span class="n">evo_prot_grad</span><span class="o">.</span><span class="n">get_expert</span><span class="p">(</span><span class="s1">&#39;esm&#39;</span><span class="p">,</span> <span class="n">scoring_strategy</span> <span class="o">=</span> <span class="s1">&#39;mutant_marginal&#39;</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
 </span></code></pre></div>
-<p>using the default model <code>EsmForMaskedLM.from_pretrained("facebook/esm2_t6_8M_UR50D")</code> and tokenizer <code>AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")</code>.</p>
+<p>which uses the default ESM2 model <code>EsmForMaskedLM.from_pretrained("facebook/esm2_t6_8M_UR50D")</code> and tokenizer <code>AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")</code>.</p>
 <p>To load the ESM2 expert with a specific model and tokenizer, provide them as arguments to <code>get_expert</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span><span class="p">,</span> <span class="n">EsmForMaskedLM</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
@@ -655,8 +655,9 @@ To use pretrained PLMs from the HuggingFace Hub with gradient-based discrete MCM
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                <span class="s1">&#39;esm&#39;</span><span class="p">,</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>                <span class="n">model</span> <span class="o">=</span> <span class="n">EsmForMaskedLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;facebook/esm2_t33_650M_UR50D&quot;</span><span class="p">),</span>
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>                <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;facebook/esm2_t33_650M_UR50D&quot;</span><span class="p">),</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>                <span class="n">temperature</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>                <span class="n">scoring_strategy</span> <span class="o">=</span> <span class="s1">&#39;mutant_marginal&#39;</span><span class="p">,</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                <span class="n">temperature</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="evcouplings-potts">EVcouplings Potts<a class="headerlink" href="#evcouplings-potts" title="Permanent link"></a></h2>
 <p>Potts models are (differentiable) linear undirected graphical models that capture pairwise interactions between amino acids in a protein sequence. 
@@ -672,7 +673,8 @@ We provide an expert that wrap Potts models from the <a href="https://github.com
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">evcouplings_expert</span> <span class="o">=</span> <span class="n">get_expert</span><span class="p">(</span>
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>            <span class="s1">&#39;evcouplings&#39;</span><span class="p">,</span> 
 </span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>            <span class="n">temperature</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">evcouplings_model</span><span class="p">)</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>            <span class="n">scoring_strategy</span> <span class="o">=</span> <span class="s1">&#39;attribute_value&#39;</span><span class="p">,</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">evcouplings_model</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="downstream-regression">Downstream Regression<a class="headerlink" href="#downstream-regression" title="Permanent link"></a></h2>
 <p>We provide a generic expert for supervised downstream regression models and a simple 1D-Convolutional neural network (CNN) PyTorch Module (<code>evo_prot_grad.models.OneHotCNN</code>) that predicts a scalar fitness score from a one-hot-encoded protein sequence.</p>
@@ -683,7 +685,8 @@ We provide an expert that wrap Potts models from the <a href="https://github.com
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">regression_expert</span> <span class="o">=</span> <span class="n">get_expert</span><span class="p">(</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>            <span class="s1">&#39;onehot_downstream_regression&#39;</span><span class="p">,</span>
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>            <span class="n">temperature</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">onehotcnn_model</span><span class="p">)</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>            <span class="n">scoring_strategy</span> <span class="o">=</span> <span class="s1">&#39;attribute_value&#39;</span><span class="p">,</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">onehotcnn_model</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="training-your-own-downstream-regression-model">Training your own downstream regression model<a class="headerlink" href="#training-your-own-downstream-regression-model" title="Permanent link"></a></h3>
 <p>You can train a <code>OneHotCNN</code> (or your own custom PyTorch model) as you normally would any supervised regression model with a dataset of pairs of (variants, fitness/stability/etc.) labels. We provide a default tokenizer class <a href="https://nrel.github.io/EvoProtGrad/api/common/tokenizers"><code>OneHotTokenizer</code></a> that can be used to convert a list of strings of amino acids into Torch one-hot tensors. Then, you can use the trained model as an expert in <code>EvoProtGrad</code>:</p>
@@ -694,7 +697,8 @@ We provide an expert that wrap Potts models from the <a href="https://github.com
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">regression_expert</span> <span class="o">=</span> <span class="n">get_expert</span><span class="p">(</span>
 </span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>            <span class="s1">&#39;onehot_downstream_regression&#39;</span><span class="p">,</span>
 </span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>            <span class="n">temperature</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">onehotcnn_model</span><span class="p">)</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>            <span class="n">scoring_strategy</span> <span class="o">=</span> <span class="s1">&#39;attribute_value&#39;</span><span class="p">,</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">onehotcnn_model</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="choosing-the-expert-temperature">Choosing the Expert Temperature<a class="headerlink" href="#choosing-the-expert-temperature" title="Permanent link"></a></h2>
 <p>The expert temperature <span class="arithmatex">\(\lambda\)</span> controls the relative importance of the expert in the Product of Experts. By default it is set to 1. </p>
