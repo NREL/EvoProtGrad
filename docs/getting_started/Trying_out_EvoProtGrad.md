@@ -7,9 +7,9 @@ import evo_prot_grad
 Create a `ProtBERT` expert from a pretrained 🤗 HuggingFace protein language model (PLM) using `evo_prot_grad.get_expert`:
 
 ```python
-prot_bert_expert = evo_prot_grad.get_expert('bert', temperature = 1.0, device = 'cuda')
+prot_bert_expert = evo_prot_grad.get_expert('bert', scoring_strategy = 'mutant_marginal', temperature = 1.0, device = 'cuda')
 ```
-The default BERT-style PLM in `EvoProtGrad` is `Rostlab/prot_bert`. Normally, we would need to also specify the model and tokenizer. When using a default PLM expert, we automatically pull these from the HuggingFace Hub. The temperature parameter rescales the expert scores and can be used to trade off the importance of different experts. For masked language models like `prot_bert`, we score variant sequences with the sum of amino acid log probabilities by default.
+The default BERT-style PLM in `EvoProtGrad` is `Rostlab/prot_bert`. Normally, we would need to also specify the model and tokenizer. When using a default PLM expert, we automatically pull these from the HuggingFace Hub. The temperature parameter rescales the expert scores and can be used to trade off the importance of different experts. For protein language models like `prot_bert`, we have implemented two scoring strategies: `pseudolikelihood_ratio` and `mutant_marginal`. The `pseudolikelihood_ratio` strategy computes the ratio of the "pseudo" log-likelihood (this isn't the exact log-likelihood when the protein language model is a *masked* language model) of the wild type and mutant sequence.
 
 Then, we create an instance of `DirectedEvolution` and run the search, returning a list of the best variant per Markov chain (as measured by the `prot_bert` expert):
 
@@ -29,7 +29,7 @@ This class implements PPDE, the gradient-based discrete MCMC sampler introduced 
 
 ### Specifying the model and tokenizer
 
-To load a HuggingFace expert with a specific model and tokenizer, provide them as arguments to `get_expert`:
+To load a HuggingFace expert with a specific model and tokenizer, provide them as arguments to [`evo_prot_grad.get_expert`](https://nrel.github.io/EvoProtGrad/api/evo_prot_grad/#get_expert):
 
 ```python
 from transformers import AutoTokenizer, EsmForMaskedLM
@@ -38,6 +38,7 @@ esm2_expert = evo_prot_grad.get_expert(
                 'esm',
                 model = EsmForMaskedLM.from_pretrained("facebook/esm2_t33_650M_UR50D"),
                 tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t33_650M_UR50D"),
+                scoring_strategy = 'mutant_marginal',
                 temperature = 1.0,
                 device = 'cuda')
 ```
@@ -51,13 +52,14 @@ You can compose multiple experts by passing multiple experts to `DirectedEvoluti
 import evo_prot_grad
 from transformers import AutoModel
 
-prot_bert_expert = evo_prot_grad.get_expert('bert', temperature = 1.0, device = 'cuda')
+prot_bert_expert = evo_prot_grad.get_expert('bert', scoring_strategy = 'mutant_marginal', temperature = 1.0, device = 'cuda')
 
 # onehot_downstream_regression are experts that predict a downstream scalar property
 # from a one-hot encoding of the protein sequence
 fluorescence_expert = evo_prot_grad.get_expert(
                         'onehot_downstream_regression',
                         temperature = 1.0,
+                        scoring_strategy = 'attribute_value',
                         model = AutoModel.from_pretrained('NREL/avGFP-fluorescence-onehot-cnn',
                                                           trust_remote_code=True),
                         device = 'cuda')
