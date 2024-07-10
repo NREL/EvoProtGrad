@@ -185,8 +185,8 @@ class AttributeExpert(Expert):
         Args:
             temperature (float): Hyperparameter for re-scaling this expert in the Product of Experts.
             model (nn.Module): The model to use for the expert.
+            scoring_strategy (str): The approach used to score mutations with this expert.
             tokenizer (ExpertTokenizer): The tokenizer to use for the expert.
-            use_without_wildtype (bool): Whether to use the expert without the wildtype.
             device (str): The device to use for the expert.
         """
         if tokenizer is None:
