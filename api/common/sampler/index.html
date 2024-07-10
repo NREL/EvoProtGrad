@@ -533,6 +533,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../variant_scoring/" class="md-nav__link">
+        evo_prot_grad.common.variant_scoring
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -965,8 +979,8 @@ by summation.</p>
   <div class="doc doc-contents ">
   
       <p>Compute the gradients of the product of experts
-with respect to the one-hots. We put each experts one-hot input 
-sequence in a canonical order before summing gradients together. </p>
+with respect to the one-hots. We put each expert's amino acid alphabet,
+used to construct one-hot inputs, in a canonical order before summing gradients together. </p>
 
 
 
@@ -1008,6 +1022,30 @@ sequence in a canonical order before summing gradients together. </p>
           </td>
           <td>
               <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>grads</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>gradients of the product of experts with respect to the one-hots.</p>
+            </div>
           </td>
         </tr>
     </tbody>

@@ -18,6 +18,8 @@
         <link rel="prev" href="../tokenizers/">
       
       
+        <link rel="next" href="../variant_scoring/">
+      
       <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
     
@@ -500,6 +502,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../variant_scoring/" class="md-nav__link">
+        evo_prot_grad.common.variant_scoring
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -700,17 +716,16 @@
 
 
 <h4 id="evo_prot_grad.common.utils.mutation_mask" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">evo_prot_grad</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">mutation_mask</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">wt</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">evo_prot_grad</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">mutation_mask</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">mutations_value</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></code>
 
 </h4>
 
 
   <div class="doc doc-contents first">
   
-      <p>Allow mutations wherever mask is False.
-For every pos where x and wt differ, and wt is not a gap (0),
-  the mask is set to False.
-Everywhere else set to True.</p>
+      <p>Create a boolean tensor with locations corresponding to mutations set to <code>mutations_value</code>.</p>
+<p>For every pos where x and wt differ, and wt is not a gap (0), the mask is set to <code>mutations_value</code>.
+Everywhere else set to <code>~mutations_value</code>.</p>
 
 
 
@@ -732,7 +747,7 @@ Everywhere else set to True.</p>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>shape [parallel_chains, seq_len, vocab_size].</p>
+              <p>shape [parallel_chains, seq_len, vocab_size]. X is one-hot encoded.</p>
             </div>
           </td>
           <td>
@@ -746,11 +761,25 @@ Everywhere else set to True.</p>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>shape [1, seq_len, vocab_size].</p>
+              <p>shape [*, seq_len, vocab_size]. wt is one-hot encoded.</p>
             </div>
           </td>
           <td>
               <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>mutations_value</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If True, set the mask to True where mutations are present. Default: False.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
           </td>
         </tr>
     </tbody>
@@ -853,6 +882,151 @@ Everywhere else set to True.</p>
         </tr>
     </tbody>
   </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="evo_prot_grad.common.utils.set_seed" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">evo_prot_grad</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">set_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Set random seed for reproducibility.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>seed</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The seed to set.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="evo_prot_grad.common.utils.print_variant_in_color" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">evo_prot_grad</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">print_variant_in_color</span><span class="p">(</span><span class="n">seq</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ignore_gaps</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Print a variant sequence with highlighted mutations.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>seq</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The variant sequence.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>wt</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The wildtype sequence.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>ignore_gaps</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If True, ignore gaps (<code>-</code> or <code>X</code>) in the comparison. Default: True.</p>
+            </div>
+          </td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="evo_prot_grad.common.utils.read_fasta" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">evo_prot_grad</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">read_fasta</span><span class="p">(</span><span class="n">fasta_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Read a fasta, return string.</p>
 
   </div>
 

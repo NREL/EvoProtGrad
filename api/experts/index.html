@@ -440,8 +440,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#huggingfaceexpert" class="md-nav__link">
-    HuggingFaceExpert
+  <a href="#proteinlmexpert" class="md-nav__link">
+    ProteinLMExpert
   </a>
   
 </li>
@@ -580,6 +580,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../common/variant_scoring/" class="md-nav__link">
+        evo_prot_grad.common.variant_scoring
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -653,7 +667,7 @@
 
 
 <h5 id="evo_prot_grad.experts.base_experts.Expert.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">vocab</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="n">use_without_wildtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">vocab</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">scoring_strategy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">)</span></code>
 
 </h5>
 
@@ -717,6 +731,20 @@
           </td>
         </tr>
         <tr>
+          <td><code>scoring_strategy</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The approach used to score mutations with this expert.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
           <td><code>device</code></td>
           <td>
                 <code>str</code>
@@ -728,21 +756,6 @@
           </td>
           <td>
                 <code>&#39;cpu&#39;</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>use_without_wildtype</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to use the expert without the wildtype,
-i.e., do not subtract the wildtype score from the expert score.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
           </td>
         </tr>
     </tbody>
@@ -757,8 +770,93 @@ i.e., do not subtract the wildtype score from the expert score.</p>
 
 
 
-<h5 id="evo_prot_grad.experts.base_experts.Expert._tokenize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span></code>
+<h5 id="evo_prot_grad.experts.base_experts.Expert._get_last_one_hots" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">_get_last_one_hots</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Abstract method to be defined, which implements
+   how the one-hot tensors <em>most recently passed</em> as input
+   to this expert can be returned.</p>
+<p>The one-hot tensors are cached and accessed from 
+a evo_prot_grad.common.embeddings.OneHotEmbedding module, which
+we configure each expert to use.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This assumes that the desired one-hot tensors are the
+last tensors passed as input to the expert. If the expert
+is called twice, this will return the one-hot tensors from the
+second call. This is intended to address the issue that some experts take lists 
+of strings as input and internally converts them into one-hot tensors.</p>
+</div>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.experts.base_experts.Expert.init_wildtype" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">init_wildtype</span><span class="p">(</span><span class="n">wt_seq</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Set the one-hot encoded wildtype sequence for this expert.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>wt_seq</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The wildtype sequence.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.experts.base_experts.Expert.tokenize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
@@ -834,8 +932,8 @@ i.e., do not subtract the wildtype score from the expert score.</p>
 
 
 
-<h5 id="evo_prot_grad.experts.base_experts.Expert._get_last_one_hots" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_get_last_one_hots</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+<h5 id="evo_prot_grad.experts.base_experts.Expert.get_model_output" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_model_output</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
@@ -846,42 +944,8 @@ i.e., do not subtract the wildtype score from the expert score.</p>
 
   <div class="doc doc-contents ">
   
-      <p>Returns the one-hot tensors <em>most recently passed</em> as input
-to this expert.</p>
-<p>The one-hot tensors are cached and accessed from 
-a evo_prot_grad.common.embeddings.OneHotEmbedding module, which
-we configure each expert to use.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This assumes that the desired one-hot tensors are the
-last tensors passed as input to the expert. If the expert
-is called twice, this will return the one-hot tensors from the
-second call. This is intended to address the issue that some experts take lists 
-of strings as input and internally converts them into one-hot tensors.</p>
-</div>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h5 id="evo_prot_grad.experts.base_experts.Expert._model_output_to_scalar_score" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_model_output_to_scalar_score</span><span class="p">(</span><span class="n">model_output</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
-  </span>
-
-</h5>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Converts the model output to a scalar score. </p>
+      <p>Abstract method to be defined, which wraps around
+the forward pass of the expert's model. </p>
 
 
 
@@ -897,31 +961,17 @@ of strings as input and internally converts them into one-hot tensors.</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>model_output</code></td>
+          <td><code>inputs</code></td>
           <td>
-                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+                <code><span title="typing.List">List</span>[str]</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>The output of the expert model.</p>
+              <p>A list of protein sequences.</p>
             </div>
           </td>
           <td>
               <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>**kwargs</code></td>
-          <td>
-                <code><span title="typing.Dict">Dict</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Any additional arguments required by the expert.</p>
-            </div>
-          </td>
-          <td>
-                <code>{}</code>
           </td>
         </tr>
     </tbody>
@@ -939,89 +989,22 @@ of strings as input and internally converts them into one-hot tensors.</p>
     </thead>
     <tbody>
         <tr>
-<td><code>score</code></td>          <td>
+<td><code>oh</code></td>          <td>
                 <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>The scalar score.</p>
+              <p>of shape [parallel_chains, seq_len, vocab_size]</p>
             </div>
           </td>
         </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h5 id="evo_prot_grad.experts.base_experts.Expert.set_wt_score" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">set_wt_score</span><span class="p">(</span><span class="n">wt_seq</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
-  </span>
-
-</h5>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Sets the wildtype score value for protein wt_seq.</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
         <tr>
-          <td><code>wt_seq</code></td>
-          <td>
-                <code>str</code>
+<td><code>model_preds</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>The wildtype sequence.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>None</p>
+              <p>of shape [parallel_chains, *].</p>
             </div>
           </td>
         </tr>
@@ -1126,15 +1109,15 @@ of strings as input and internally converts them into one-hot tensors.</p>
 
   </div>
 
-</div><h2 id="huggingfaceexpert">HuggingFaceExpert<a class="headerlink" href="#huggingfaceexpert" title="Permanent link"></a></h2>
+</div><h2 id="proteinlmexpert">ProteinLMExpert<a class="headerlink" href="#proteinlmexpert" title="Permanent link"></a></h2>
 
 
 <div class="doc doc-object doc-class">
 
 
 
-<h4 id="evo_prot_grad.experts.base_experts.HuggingFaceExpert" class="doc doc-heading">
-          <code>evo_prot_grad.experts.base_experts.HuggingFaceExpert</code>
+<h4 id="evo_prot_grad.experts.base_experts.ProteinLMExpert" class="doc doc-heading">
+          <code>evo_prot_grad.experts.base_experts.ProteinLMExpert</code>
 
 
 </h4>
@@ -1144,6 +1127,11 @@ of strings as input and internally converts them into one-hot tensors.</p>
           <p class="doc doc-class-bases">
             Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.Expert" href="#evo_prot_grad.experts.base_experts.Expert">Expert</a></code></p>
 
+  
+      <p>An expert for protein language models (pLMs). 
+Assumes the pLM predicts a logit score for each amino acid.
+Implements abstract methods <code>get_model_output</code> and <code>__call__</code>. </p>
+<p>Create a sub-class of this class to add a new HuggingFace pLM expert.</p>
 
 
   
@@ -1163,8 +1151,8 @@ of strings as input and internally converts them into one-hot tensors.</p>
 
 
 
-<h5 id="evo_prot_grad.experts.base_experts.HuggingFaceExpert.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">vocab</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">use_without_wildtype</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span></code>
+<h5 id="evo_prot_grad.experts.base_experts.ProteinLMExpert.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">vocab</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">scoring_strategy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h5>
 
@@ -1241,20 +1229,6 @@ of strings as input and internally converts them into one-hot tensors.</p>
               <em>required</em>
           </td>
         </tr>
-        <tr>
-          <td><code>use_without_wildtype</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to use the expert without the wildtype.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
     </tbody>
   </table>
 
@@ -1267,16 +1241,16 @@ of strings as input and internally converts them into one-hot tensors.</p>
 
 
 
-<h5 id="evo_prot_grad.experts.base_experts.HuggingFaceExpert._model_output_to_scalar_score" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_model_output_to_scalar_score</span><span class="p">(</span><span class="n">x_oh</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">logits</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+<h5 id="evo_prot_grad.experts.base_experts.ProteinLMExpert.get_model_output" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_model_output</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
 
 </h5>
 
 
   <div class="doc doc-contents ">
   
-      <p>Returns the scalar score assuming the expert predicts
-a logit score for each amino acid.</p>
+      <p>Returns the one-hot sequences and logits for each amino acid in the
+   input sequence.</p>
 
 
 
@@ -1292,27 +1266,13 @@ a logit score for each amino acid.</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>x_oh</code></td>
+          <td><code>inputs</code></td>
           <td>
-                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+                <code><span title="typing.List">List</span>[str]</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>(torch.Tensor) of shape [parallel_chains, seq_len, vocab_size]</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>logits</code></td>
-          <td>
-                <code>torch.<span title="torch.Tensor">Tensor</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>(torch.Tensor) of shape [parallel_chains, seq_len, vocab_size]</p>
+              <p>A list of protein sequence strings of len [parallel_chains].</p>
             </div>
           </td>
           <td>
@@ -1334,62 +1294,23 @@ a logit score for each amino acid.</p>
     </thead>
     <tbody>
         <tr>
-<td><code>score</code></td>          <td>
+<td><code>x_oh</code></td>          <td>
                 <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>of shape [parallel_chains]</p>
+              <p>(torch.Tensor) of shape [parallel_chains, seq_len, vocab_size]</p>
             </div>
           </td>
         </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h5 id="evo_prot_grad.experts.base_experts.HuggingFaceExpert.set_wt_score" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">set_wt_score</span><span class="p">(</span><span class="n">wt_seq</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
-
-</h5>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Sets the score value for wildtype protein wt_seq.</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
         <tr>
-          <td><code>wt_seq</code></td>
-          <td>
-                <code>str</code>
+<td><code>logits</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>The wildtype sequence.</p>
+              <p>(torch.Tensor) of shape [parallel_chains, seq_len, vocab_size]</p>
             </div>
-          </td>
-          <td>
-              <em>required</em>
           </td>
         </tr>
     </tbody>
@@ -1404,7 +1325,7 @@ a logit score for each amino acid.</p>
 
 
 
-<h5 id="evo_prot_grad.experts.base_experts.HuggingFaceExpert.__call__" class="doc doc-heading">
+<h5 id="evo_prot_grad.experts.base_experts.ProteinLMExpert.__call__" class="doc doc-heading">
 <code class="highlight language-python"><span class="fm">__call__</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
 
 </h5>
@@ -1413,7 +1334,7 @@ a logit score for each amino acid.</p>
   <div class="doc doc-contents ">
   
       <p>Returns the one-hot sequences and expert score.
-Assumes the PLM model predicts a logit score for each amino acid.</p>
+Assumes the pLM predicts a logit score for each amino acid.</p>
 
 
 
@@ -1505,11 +1426,11 @@ Assumes the PLM model predicts a logit score for each amino acid.</p>
 
   <div class="doc doc-contents first">
           <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.HuggingFaceExpert" href="#evo_prot_grad.experts.base_experts.HuggingFaceExpert">HuggingFaceExpert</a></code></p>
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.ProteinLMExpert" href="#evo_prot_grad.experts.base_experts.ProteinLMExpert">ProteinLMExpert</a></code></p>
 
   
       <p>Expert sub-class for BERT-style HuggingFace protein language models.
-Implements abstract methods <code>_get_last_one_hots</code> and <code>_tokenize</code>.
+Implements abstract methods <code>_get_last_one_hots</code> and <code>tokenize</code>.
 Swaps out the <code>BertForMaskedLM.bert.embeddings.word_embeddings</code> layer
 for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
@@ -1532,7 +1453,7 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
 <h5 id="evo_prot_grad.experts.bert_expert.BERTExpert.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PreTrainedTokenizerBase</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="n">use_without_wildtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">scoring_strategy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PreTrainedTokenizerBase</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">)</span></code>
 
 </h5>
 
@@ -1561,6 +1482,20 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
           <td>
             <div class="doc-md-description">
               <p>Temperature for sampling from the expert.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scoring_strategy</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Approach for scoring variants that the expert will use.</p>
             </div>
           </td>
           <td>
@@ -1609,20 +1544,6 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
                 <code>&#39;cpu&#39;</code>
           </td>
         </tr>
-        <tr>
-          <td><code>use_without_wildtype</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to use the wildtype score as a baseline.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
     </tbody>
   </table>
 
@@ -1659,8 +1580,51 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
 
-<h5 id="evo_prot_grad.experts.bert_expert.BERTExpert._tokenize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BatchEncoding</span></code>
+<h5 id="evo_prot_grad.experts.bert_expert.BERTExpert._get_last_one_hots" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">_get_last_one_hots</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the one-hot tensors <em>most recently passed</em> as input.</p>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>one_hots</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>of shape [parallel_chains, seq_len, vocab_size]</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.experts.bert_expert.BERTExpert.tokenize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BatchEncoding</span></code>
 
 </h5>
 
@@ -1728,49 +1692,6 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 </div>
 
 
-<div class="doc doc-object doc-function">
-
-
-
-<h5 id="evo_prot_grad.experts.bert_expert.BERTExpert._get_last_one_hots" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_get_last_one_hots</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
-
-</h5>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Returns the one-hot tensors <em>most recently passed</em> as input.</p>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-<th>Name</th>        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-<td><code>one_hots</code></td>          <td>
-                <code>torch.<span title="torch.Tensor">Tensor</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>of shape [parallel_chains, seq_len, vocab_size]</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
 
   </div>
 
@@ -1792,11 +1713,11 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
   <div class="doc doc-contents first">
           <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.HuggingFaceExpert" href="#evo_prot_grad.experts.base_experts.HuggingFaceExpert">HuggingFaceExpert</a></code></p>
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.ProteinLMExpert" href="#evo_prot_grad.experts.base_experts.ProteinLMExpert">ProteinLMExpert</a></code></p>
 
   
       <p>Expert sub-class for autoregressive (causal) HuggingFace protein language models.
-Implements abstract methods <code>_get_last_one_hots</code> and <code>_tokenize</code>.
+Implements abstract methods <code>_get_last_one_hots</code> and <code>tokenize</code>.
 Swaps out the <code>AutoModelForCausalLM.transformer.embedding</code> layer
 for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
@@ -1819,7 +1740,7 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
 <h5 id="evo_prot_grad.experts.causallm_expert.CausalLMExpert.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PreTrainedTokenizerBase</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="n">use_without_wildtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">scoring_strategy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PreTrainedTokenizerBase</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">)</span></code>
 
 </h5>
 
@@ -1848,6 +1769,20 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
           <td>
             <div class="doc-md-description">
               <p>Temperature for sampling from the expert.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scoring_strategy</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Approach for scoring variants that the expert will use.</p>
             </div>
           </td>
           <td>
@@ -1896,20 +1831,6 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
                 <code>&#39;cpu&#39;</code>
           </td>
         </tr>
-        <tr>
-          <td><code>use_without_wildtype</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to use the expert without the wildtype.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
     </tbody>
   </table>
 
@@ -1946,8 +1867,27 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
 
-<h5 id="evo_prot_grad.experts.causallm_expert.CausalLMExpert._tokenize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BatchEncoding</span></code>
+<h5 id="evo_prot_grad.experts.causallm_expert.CausalLMExpert._get_last_one_hots" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">_get_last_one_hots</span><span class="p">()</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the one-hot tensors <em>most recently passed</em> as input.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.experts.causallm_expert.CausalLMExpert.tokenize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BatchEncoding</span></code>
 
 </h5>
 
@@ -2015,25 +1955,6 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 </div>
 
 
-<div class="doc doc-object doc-function">
-
-
-
-<h5 id="evo_prot_grad.experts.causallm_expert.CausalLMExpert._get_last_one_hots" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_get_last_one_hots</span><span class="p">()</span></code>
-
-</h5>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Returns the one-hot tensors <em>most recently passed</em> as input.</p>
-
-  </div>
-
-</div>
-
-
 
   </div>
 
@@ -2055,11 +1976,11 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
   <div class="doc doc-contents first">
           <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.HuggingFaceExpert" href="#evo_prot_grad.experts.base_experts.HuggingFaceExpert">HuggingFaceExpert</a></code></p>
+            Bases: <code><a class="autorefs autorefs-internal" title="evo_prot_grad.experts.base_experts.ProteinLMExpert" href="#evo_prot_grad.experts.base_experts.ProteinLMExpert">ProteinLMExpert</a></code></p>
 
   
       <p>Expert baseclass for HuggingFace protein language models from the ESM family.
-Implements abstract methods <code>_get_last_one_hots</code> and <code>_tokenize</code>.
+Implements abstract methods <code>_get_last_one_hots</code> and <code>tokenize</code>.
 Swaps out the <code>EsmForMaskedLM.esm.embeddings.word_embeddings</code> layer
 for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
@@ -2082,7 +2003,7 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
 <h5 id="evo_prot_grad.experts.esm_expert.EsmExpert.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PreTrainedTokenizerBase</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="n">use_without_wildtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">scoring_strategy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PreTrainedTokenizerBase</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span><span class="p">)</span></code>
 
 </h5>
 
@@ -2111,6 +2032,20 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
           <td>
             <div class="doc-md-description">
               <p>Temperature for sampling from the expert.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scoring_strategy</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Approach for scoring variants that the expert will use.</p>
             </div>
           </td>
           <td>
@@ -2159,20 +2094,6 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
                 <code>&#39;cpu&#39;</code>
           </td>
         </tr>
-        <tr>
-          <td><code>use_without_wildtype</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to use the expert without the wildtype.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
     </tbody>
   </table>
 
@@ -2209,8 +2130,27 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
 
 
-<h5 id="evo_prot_grad.experts.esm_expert.EsmExpert._tokenize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BatchEncoding</span></code>
+<h5 id="evo_prot_grad.experts.esm_expert.EsmExpert._get_last_one_hots" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">_get_last_one_hots</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns the one-hot tensors <em>most recently passed</em> as input.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.experts.esm_expert.EsmExpert.tokenize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BatchEncoding</span></code>
 
 </h5>
 
@@ -2278,25 +2218,6 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 </div>
 
 
-<div class="doc doc-object doc-function">
-
-
-
-<h5 id="evo_prot_grad.experts.esm_expert.EsmExpert._get_last_one_hots" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_get_last_one_hots</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
-
-</h5>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Returns the one-hot tensors <em>most recently passed</em> as input.</p>
-
-  </div>
-
-</div>
-
-
 
   </div>
 
@@ -2322,7 +2243,8 @@ for a <code>evo_prot_grad.common.embeddings.OneHotEmbedding</code> layer.</p>
 
   
       <p>Interface for experts trained (typically with supervised learning)
-to predict an attribute (e.g., activity or stability) from one-hot encoded sequences.</p>
+to predict an attribute (e.g., activity or stability) from one-hot encoded sequences.
+Implements abstract methods <code>tokenize</code>, <code>get_model_output</code>, <code>__call__</code>.</p>
 
 
   
@@ -2343,7 +2265,7 @@ to predict an attribute (e.g., activity or stability) from one-hot encoded seque
 
 
 <h5 id="evo_prot_grad.experts.base_experts.AttributeExpert.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">use_without_wildtype</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">tokenizers</span><span class="o">.</span><span class="n">ExpertTokenizer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">scoring_strategy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">tokenizers</span><span class="o">.</span><span class="n">ExpertTokenizer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
 
 </h5>
 
@@ -2446,8 +2368,8 @@ to predict an attribute (e.g., activity or stability) from one-hot encoded seque
 
 
 
-<h5 id="evo_prot_grad.experts.base_experts.AttributeExpert._tokenize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span></code>
+<h5 id="evo_prot_grad.experts.base_experts.AttributeExpert.tokenize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span></code>
 
 </h5>
 
@@ -2495,16 +2417,15 @@ to predict an attribute (e.g., activity or stability) from one-hot encoded seque
 
 
 
-<h5 id="evo_prot_grad.experts.base_experts.AttributeExpert._model_output_to_scalar_score" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">_model_output_to_scalar_score</span><span class="p">(</span><span class="n">model_outputs</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
+<h5 id="evo_prot_grad.experts.base_experts.AttributeExpert.get_model_output" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_model_output</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
 
 </h5>
 
 
   <div class="doc doc-contents ">
   
-      <p>Returns the score for the given input assuming 
-the expert predicts a single scalar. </p>
+      <p>Returns both the onehot-encoded inputs and model's predictions.</p>
 
 
 
@@ -2520,13 +2441,13 @@ the expert predicts a single scalar. </p>
     </thead>
     <tbody>
         <tr>
-          <td><code>model_outputs</code></td>
+          <td><code>inputs</code></td>
           <td>
-                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+                <code><span title="typing.List">List</span>[str]</code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>(torch.Tensor) of shape [parallel_chains]</p>
+              <p>A list of protein sequence strings of len [parallel_chains].</p>
             </div>
           </td>
           <td>
@@ -2548,12 +2469,22 @@ the expert predicts a single scalar. </p>
     </thead>
     <tbody>
         <tr>
-<td><code>model_outputs</code></td>          <td>
+<td><code>x_oh</code></td>          <td>
                 <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
             <div class="doc-md-description">
-              <p>(torch.Tensor) of shape [parallel_chains]</p>
+              <p>(torch.Tensor) of shape [parallel_chains, seq_len, vocab_size]</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>attribute_values</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>(torch.Tensor) of shape [parallel_chains, seq_len, vocab_size]</p>
             </div>
           </td>
         </tr>
@@ -2569,45 +2500,13 @@ the expert predicts a single scalar. </p>
 
 
 
-<h5 id="evo_prot_grad.experts.base_experts.AttributeExpert.set_wt_score" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">set_wt_score</span><span class="p">(</span><span class="n">wt_seq</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+<h5 id="evo_prot_grad.experts.base_experts.AttributeExpert._get_last_one_hots" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">_get_last_one_hots</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span></code>
 
 </h5>
 
 
   <div class="doc doc-contents ">
-  
-      <p>Sets the score value for wildtype protein wt_seq.</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>wt_seq</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The wildtype sequence.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
 
   </div>
 
@@ -2669,7 +2568,7 @@ the expert predicts a single scalar. </p>
     </thead>
     <tbody>
         <tr>
-<td><code>oh</code></td>          <td>
+<td><code>x_oh</code></td>          <td>
                 <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
@@ -2723,6 +2622,7 @@ the expert predicts a single scalar. </p>
   
       <p>Expert class for EVCouplings Potts models.
 EVCouplings lib uses the canonical alphabet by default.</p>
+<p>Implements abstract methods <code>_get_last_one_hots</code>, <code>tokenize</code>, <code>get_model_output</code>, <code>__call__</code>.</p>
 
 
   
@@ -2743,7 +2643,7 @@ EVCouplings lib uses the canonical alphabet by default.</p>
 
 
 <h5 id="evo_prot_grad.experts.evcouplings_expert.EVCouplingsExpert.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">potts</span><span class="o">.</span><span class="n">EVCouplings</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OneHotTokenizer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_without_wildtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">scoring_strategy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">potts</span><span class="o">.</span><span class="n">EVCouplings</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OneHotTokenizer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
 
 </h5>
 
@@ -2772,6 +2672,20 @@ EVCouplings lib uses the canonical alphabet by default.</p>
           <td>
             <div class="doc-md-description">
               <p>Temperature for sampling from the expert.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scoring_strategy</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Approach for scoring variants that the expert will use.</p>
             </div>
           </td>
           <td>
@@ -2821,41 +2735,8 @@ EVCouplings lib uses the canonical alphabet by default.</p>
                 <code>None</code>
           </td>
         </tr>
-        <tr>
-          <td><code>use_without_wildtype</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to use the expert without the wildtype.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
     </tbody>
   </table>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h5 id="evo_prot_grad.experts.evcouplings_expert.EVCouplingsExpert.set_wt_score" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">set_wt_score</span><span class="p">(</span><span class="n">wt_seq</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
-
-</h5>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Sets the wildtype score value for protein wt_seq</p>
 
   </div>
 
@@ -2874,6 +2755,7 @@ EVCouplings lib uses the canonical alphabet by default.</p>
 
   <div class="doc doc-contents ">
   
+      <p>Compute the wildtype-normalized Hamiltonian expert score.</p>
 
 
 
@@ -2944,6 +2826,55 @@ EVCouplings lib uses the canonical alphabet by default.</p>
 </div>
 
 
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.experts.evcouplings_expert.EVCouplingsExpert.init_wildtype" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">init_wildtype</span><span class="p">(</span><span class="n">wt_seq</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Set the one-hot encoded wildtype sequence for this expert.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>wt_seq</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The wildtype sequence.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
 
   </div>
 
@@ -2990,7 +2921,7 @@ EVCouplings lib uses the canonical alphabet by default.</p>
 
 
 <h5 id="evo_prot_grad.experts.onehot_downstream_regression_expert.OneHotDownstreamRegressionExpert.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Module</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OneHotTokenizer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_without_wildtype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">scoring_strategy</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Module</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OneHotTokenizer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
 
 </h5>
 
@@ -3019,6 +2950,20 @@ EVCouplings lib uses the canonical alphabet by default.</p>
           <td>
             <div class="doc-md-description">
               <p>Temperature for sampling from the expert.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scoring_strategy</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Approach for scoring variants that the expert will use.</p>
             </div>
           </td>
           <td>
@@ -3068,20 +3013,6 @@ a OneHotTokenizer will be constructed. Defaults to None.</p>
                 <code>None</code>
           </td>
         </tr>
-        <tr>
-          <td><code>use_without_wildtype</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to use the expert without the wildtype. Defaults to False.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
     </tbody>
   </table>
 
@@ -3094,15 +3025,15 @@ a OneHotTokenizer will be constructed. Defaults to None.</p>
 
 
 
-<h5 id="evo_prot_grad.experts.onehot_downstream_regression_expert.OneHotDownstreamRegressionExpert.set_wt_score" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">set_wt_score</span><span class="p">(</span><span class="n">wt_seq</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+<h5 id="evo_prot_grad.experts.onehot_downstream_regression_expert.OneHotDownstreamRegressionExpert.init_wildtype" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">init_wildtype</span><span class="p">(</span><span class="n">wt_seq</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
 
 </h5>
 
 
   <div class="doc doc-contents ">
   
-      <p>Sets the score value for wildtype protein wt_seq.</p>
+      <p>Set the one-hot encoded wildtype sequence for this expert.</p>
 
 
 
@@ -3129,6 +3060,138 @@ a OneHotTokenizer will be constructed. Defaults to None.</p>
           </td>
           <td>
               <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.experts.onehot_downstream_regression_expert.OneHotDownstreamRegressionExpert.tokenize" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">tokenize</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Tokenizes a list of protein sequences.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>inputs</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of protein sequences.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.experts.onehot_downstream_regression_expert.OneHotDownstreamRegressionExpert.get_model_output" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_model_output</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns both the onehot-encoded inputs and model's predictions.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>inputs</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of protein sequence strings of len [parallel_chains].</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>x_oh</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>(torch.Tensor) of shape [parallel_chains, seq_len, vocab_size]</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>attribute_values</code></td>          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>(torch.Tensor) of shape [parallel_chains, seq_len, vocab_size]</p>
+            </div>
           </td>
         </tr>
     </tbody>
@@ -3194,7 +3257,7 @@ a OneHotTokenizer will be constructed. Defaults to None.</p>
     </thead>
     <tbody>
         <tr>
-<td><code>oh</code></td>          <td>
+<td><code>x_oh</code></td>          <td>
                 <code>torch.<span title="torch.Tensor">Tensor</span></code>
           </td>
           <td>
