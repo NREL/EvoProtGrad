@@ -2315,6 +2315,20 @@ Implements abstract methods <code>tokenize</code>, <code>get_model_output</code>
           </td>
         </tr>
         <tr>
+          <td><code>scoring_strategy</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The approach used to score mutations with this expert.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
           <td><code>tokenizer</code></td>
           <td>
                 <code><a class="autorefs autorefs-internal" title="evo_prot_grad.common.tokenizers.ExpertTokenizer" href="../common/tokenizers/#evo_prot_grad.common.tokenizers.ExpertTokenizer">ExpertTokenizer</a></code>
@@ -2326,20 +2340,6 @@ Implements abstract methods <code>tokenize</code>, <code>get_model_output</code>
           </td>
           <td>
                 <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>use_without_wildtype</code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to use the expert without the wildtype.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
           </td>
         </tr>
         <tr>
