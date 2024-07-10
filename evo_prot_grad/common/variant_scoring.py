@@ -1,5 +1,4 @@
 import torch 
-import evo_prot_grad.common.utils as utils
 
 
 class VariantScoring:
@@ -8,10 +7,12 @@ class VariantScoring:
 
     Supported scoring strategies
 
-    1) `attribute_value`: Uses a model's predicted attribute value for a given variant,
+    1) `attribute_value` - Uses a model's predicted attribute value for a given variant,
         normalized by subtracting the wildtype's predicted value.
     2) `pseudolikelihood_ratio`
     3) `mutant_marginal` 
+
+    See: https://www.biorxiv.org/content/10.1101/2021.07.09.450648v2 for (2-3).
     """
     def __init__(self, scoring_strategy: str):
         self.scoring_strategy = scoring_strategy
@@ -59,7 +60,7 @@ class VariantScoring:
         pseudo-likelihood ratio since here, the variant is used to compute the
         likelihood of the wild type (b).
         
-        See: https://www.biorxiv.org/content/10.1101/2021.07.09.450648v2.
+        See https://www.biorxiv.org/content/10.1101/2021.07.09.450648v2.
 
         Args:
             x_oh (torch.Tensor): one-hot encoded variant sequences,
