@@ -701,12 +701,8 @@ We provide an expert that wrap Potts models from the <a href="https://github.com
 </span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">onehotcnn_model</span><span class="p">)</span>
 </span></code></pre></div>
 <h2 id="choosing-the-expert-temperature">Choosing the Expert Temperature<a class="headerlink" href="#choosing-the-expert-temperature" title="Permanent link"></a></h2>
-<p>The expert temperature <span class="arithmatex">\(\lambda\)</span> controls the relative importance of the expert in the Product of Experts. By default it is set to 1. </p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>By default, the expert's score for a variant is normalized by the wild type score, i.e., we subtract the wild type score from the variant score. This is to ensure that each expert in the Product of Experts is centered around 0. If you want to use the raw expert score, set <code>use_without_wildtype = True</code> when instantiating the expert.</p>
-</div>
-<p>If using wild type centering, then we recommend first trying temperatures of 1.0 for each <span class="arithmatex">\(\lambda\)</span>. 
+<p>The expert temperature <span class="arithmatex">\(\lambda\)</span> controls the relative importance of the expert in the Product of Experts. By default it is set to 1. 
+We recommend first trying temperatures of 1.0 for each <span class="arithmatex">\(\lambda\)</span>, and checking whether each expert score is within the same order of magnitude as the other experts. If one expert's scores are much larger or smaller than the others, you may need to adjust the temperature to balance the experts.
 We describe a simple heuristic for selecting <span class="arithmatex">\(\lambda\)</span> via a grid search using a small dataset of labeled variants in Section 5.2 of our <a href="https://doi.org/10.1088/2632-2153/accacd">paper</a>.</p>
 
 
