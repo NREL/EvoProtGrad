@@ -1,6 +1,6 @@
 # Contributing to EvoProtGrad
 
-We are excited for community contributions!
+We are excited for community contributions and are actively reviewing and accepting pull requests!
 There are a variety of ways in which you can contribute beyond writing code.
 This document provides a high-level overview of how you can get involved.
 
@@ -24,7 +24,7 @@ them most effective.
 
 ## Reporting Issues
 
-Have you identified a reproducible problem in FLORIS?
+Have you identified a reproducible problem in EvoProtGrad?
 Have a feature request? We want to hear about it! Here's how you can make
 reporting your issue as effective as possible.
 
@@ -72,7 +72,7 @@ Please remember to do the following:
 
 If you are interested in writing code to fix an issue or
 submit a new feature, let us know in
-[Ideas Discussions](https://github.com/NREL/floris/EvoProtGrad/categories/ideas)!
+[Ideas Discussions](https://github.com/NREL/EvoProtGrad/categories/ideas)!
 
 Coming Soon - developer guidelines!
 
