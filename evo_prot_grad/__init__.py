@@ -32,6 +32,8 @@ def get_expert(expert_name: str,
         expert_name = 'esm',
         model = EsmForMaskedLM.from_pretrained("facebook/esm2_t36_3B_UR50D"),
         tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t36_3B_UR50D"),
+        scoring_strategy = 'mutant_marginal',
+        temperature = 1.0,
         device = 'cuda'
     )   
     ```

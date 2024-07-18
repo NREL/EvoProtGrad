@@ -33,33 +33,33 @@ $$
 \log P(X) = \log F(X) + \lambda \log G(X) - \log Z.
 $$
 
-In `EvoProtGrad`, the "score" of each expert corresponds to either $\log F(X)$ or $\log G(X)$ here. In most cases, we interpret the scalar output of a neural network as the score.
+In `EvoProtGrad`, the **score**"** of each expert corresponds to either $\log F(X)$ or $\log G(X)$ here. In most cases, we interpret the scalar output of a neural network as the score.
 The magic of the Product of Experts formulation is that it enables us to compose arbitrary numbers of experts, essentially allowing us to "plug and play" with different experts to guide the search.
 
 In actuality, instead of just searching for a protein variant that maximizes $P(X)$, `EvoProtGrad` uses gradient-based discrete MCMC to *sample* from $P(X)$.
 MCMC is necessary for sampling from $P(X)$ because it is impractical to compute the partition function $Z$ exactly.
 Uniquely to `EvoProtGrad`, as long *all* experts are *differentiable*, our sampler can use the gradient of $\log F(X) + \lambda \log G(X)$ with respect to the one-hot protein $X$ to identify the most promising mutation to apply to $X$, which vastly speeds up MCMC convergence.
 
-##  🤗 HuggingFace Transformers 
+##  🤗 HuggingFace Protein Language Models (PLMs) 
 
 `EvoProtGrad` provides a convenient interface for defining and using experts from the HuggingFace Hub.
-To use pretrained PLMs from the HuggingFace Hub with gradient-based discrete MCMC, we swap out each transformer's token embedding layer for a custom [one-hot token embedding layer](https://nrel.github.io/EvoProtGrad/api/common/embeddings/#onehotembedding). This enables us to compute and access gradients with respect to one-hot input protein sequences.
+In detail, we modify pretrained PLMs from the HuggingFace Hub to use with gradient-based discrete MCMC by hot-swapping the Transformer's token embedding layer for a custom [one-hot embedding layer](https://nrel.github.io/EvoProtGrad/api/common/embeddings/#onehotembedding). This enables us to compute and access gradients with respect to one-hot protein sequences.
 
-We provide a baseclass `evo_prot_grad.experts.base_experts.ProteinLMExpert` which is subclassed to support various types of HuggingFace PLMs. Currently, we provide three subclasses for
+We provide a baseclass `evo_prot_grad.experts.base_experts.ProteinLMExpert` which can be subclassed to support various types of HuggingFace PLMs. Currently, we provide three subclasses for
 
 - BERT-style PLMs (`evo_prot_grad.experts.bert_expert.BertExpert`)
 - CausalLM-style PLMs (`evo_prot_grad.experts.causallm_expert.CausalLMExpert`)
 - ESM-style PLMs (`evo_prot_grad.experts.esm_expert.EsmExpert`)
 
-Each HuggingFace PLM expert has to specify the model and tokenizer to use. Defaults for each type of PLM are provided. 
+To instantiate EvoProtGrad ProteinLMExperts, we provide a simple function [`evo_prot_grad.get_expert`](https://nrel.github.io/EvoProtGrad/api/evo_prot_grad/#get_expert). The name of the expert, the variant scoring strategy, and the temperature for scaling the expert score must be provided. We provide defaults for the other arguments to `get_expert`.
 
-For example, an ESM2 expert can be instantiated with `evo_prot_grad.get_expert` with only:
+For example, an ESM2 expert can be instantiated with:
 
 ```python
-esm2_expert = evo_prot_grad.get_expert('esm', temperature = 1.0, device = 'cuda')
+esm2_expert = evo_prot_grad.get_expert('esm', scoring_strategy = 'mutant_marginal', temperature = 1.0, device = 'cuda')
 ```
 
-using the default model `EsmForMaskedLM.from_pretrained("facebook/esm2_t6_8M_UR50D")` and tokenizer `AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")`.
+which uses the default ESM2 model `EsmForMaskedLM.from_pretrained("facebook/esm2_t6_8M_UR50D")` and tokenizer `AutoTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")`.
 
 To load the ESM2 expert with a specific model and tokenizer, provide them as arguments to `get_expert`:
 
@@ -70,6 +70,7 @@ esm2_expert = evo_prot_grad.get_expert(
                 'esm',
                 model = EsmForMaskedLM.from_pretrained("facebook/esm2_t33_650M_UR50D"),
                 tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t33_650M_UR50D"),
+                scoring_strategy = 'mutant_marginal',
                 temperature = 1.0,
                 device = 'cuda')
 ```
@@ -94,6 +95,7 @@ evcouplings_model = EVCouplings(
 evcouplings_expert = get_expert(
             'evcouplings', 
             temperature = 1.0,
+            scoring_strategy = 'attribute_value',
             model = evcouplings_model)
 ```
 
@@ -110,6 +112,7 @@ onehotcnn_model = AutoModel.from_pretrained(
 regression_expert = get_expert(
             'onehot_downstream_regression',
             temperature = 1.0,
+            scoring_strategy = 'attribute_value',
             model = onehotcnn_model)
 ```
 
@@ -125,16 +128,12 @@ onehotcnn_model.load_state_dict(torch.load('onehotcnn.pt'))
 regression_expert = get_expert(
             'onehot_downstream_regression',
             temperature = 1.0,
+            scoring_strategy = 'attribute_value',
             model = onehotcnn_model)
 ```
 
 ## Choosing the Expert Temperature
 
 The expert temperature $\lambda$ controls the relative importance of the expert in the Product of Experts. By default it is set to 1. 
-
-!!! note 
-
-    By default, the expert's score for a variant is normalized by the wild type score, i.e., we subtract the wild type score from the variant score. This is to ensure that each expert in the Product of Experts is centered around 0. If you want to use the raw expert score, set `use_without_wildtype = True` when instantiating the expert.
-
-If using wild type centering, then we recommend first trying temperatures of 1.0 for each $\lambda$. 
+We recommend first trying temperatures of 1.0 for each $\lambda$, and checking whether each expert score is within the same order of magnitude as the other experts. If one expert's scores are much larger or smaller than the others, you may need to adjust the temperature to balance the experts.
 We describe a simple heuristic for selecting $\lambda$ via a grid search using a small dataset of labeled variants in Section 5.2 of our [paper](https://doi.org/10.1088/2632-2153/accacd).
