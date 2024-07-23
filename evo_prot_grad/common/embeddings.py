@@ -35,6 +35,7 @@ class OneHotEmbedding(nn.Module):
         nn_embeddings: nn.Embedding
     ):
         super().__init__()
+        print("Using local OneHotEmbedding class")
         self.weight = nn_embeddings.weight
         self.one_hots = None
          
@@ -50,7 +51,18 @@ class OneHotEmbedding(nn.Module):
         """
         # convert input_ids to one_hots
         # one_hots is a torch.FloatTensor of shape [batch_size, max_sequence_len, vocab_size]
-        one_hots = torch.nn.functional.one_hot(input_ids, num_classes=self.weight.shape[0])
+        #one_hots = torch.nn.functional.one_hot(input_ids, num_classes=self.weight.shape[0])
+        #one_hots = one_hots.to(dtype=self.weight.dtype) # to be compatible with half precision ESM2
         # cache the one_hots
-        self.one_hots = one_hots.float().requires_grad_()
-        return self.one_hots @ self.weight
+        #self.one_hots = one_hots.float().requires_grad_()
+        #self.one_hots = one_hots.requires_grad_()
+        #return self.one_hots @ self.weight
+        one_hots = torch.nn.functional.one_hot(input_ids, num_classes=self.weight.shape[0])
+        one_hots = one_hots.to(dtype=torch.float32)  # Ensure one_hots are in float32 for gradient computation
+        # Cache the one_hots
+        self.one_hots = one_hots.requires_grad_()
+        # Compute the embeddings and convert back to float16 if necessary
+        embeddings = self.one_hots @ self.weight.to(dtype=torch.float32)
+        if self.weight.dtype == torch.float16:
+            embeddings = embeddings.to(dtype=torch.float16)
+        return embeddings
