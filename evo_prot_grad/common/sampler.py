@@ -4,6 +4,7 @@ import numpy as np
 from evo_prot_grad.experts.base_experts import Expert
 import evo_prot_grad.common.utils as utils
 import evo_prot_grad.common.tokenizers as tokenizers
+import pandas as pd
 
 
 class DirectedEvolution:
@@ -69,7 +70,7 @@ class DirectedEvolution:
             for start, end in self.preserved_regions:
                 if end - start < 0:
                     raise ValueError("Preserved regions must be at least 1 amino acid long")
-                
+        
         # maintains a tokenizer with canonical alphabet
         # for the one-hot encoded chains
         self.canonical_chain_tokenizer = tokenizers.OneHotTokenizer(
@@ -110,7 +111,7 @@ class DirectedEvolution:
         self.PoE_history = []
         # a List for storing the history of one-hot encoded chains
         self.chains_oh_history = []
-
+        
         for expert in self.experts:
             expert.init_wildtype(self.wtseq)
 
@@ -163,7 +164,113 @@ class DirectedEvolution:
             summed_grads += [ oh_grad @ expert.expert_to_canonical_order ]
         # sum over experts
         return torch.stack(summed_grads, dim=0).sum(dim=0)
-        
+
+    def _prepare_results(self, variants, scores, n_seqs_to_keep=None):
+        """Prepare the results by sorting and selecting the top sequences.
+
+        Args:
+            variants (List[str]): The list of sequence variants. Shape is (n_steps, parallel_chains).
+            scores (np.ndarray): The scores for the sequence variants. Shape is (n_steps, parallel_chains).
+            n_seqs_to_keep (int, optional): Number of sequences to keep. Default is None (keep all).
+
+        Returns:
+            DataFrame: DataFrame of results.
+        """
+
+        # Initialize dictionaries to store counts and first appearance iteration
+        sequence_counts = {}
+        sequence_first_iter = {}
+        sequence_scores = {}
+
+        # Iterate through the flattened list to count sequences and record first appearance
+        for i, sublist in enumerate(variants):
+            for j, seq in enumerate(sublist):
+                flat_seq = ''.join(seq.split())
+                if flat_seq in sequence_counts:
+                    sequence_counts[flat_seq] += 1
+                else:
+                    sequence_counts[flat_seq] = 1
+                    sequence_first_iter[flat_seq] = i
+                    sequence_scores[flat_seq] = scores[i, j]
+
+        # Prepare lists for DataFrame creation
+        unique_variants = list(sequence_counts.keys())
+        unique_scores = [sequence_scores[seq] for seq in unique_variants]
+        unique_first_iter = [sequence_first_iter[seq] for seq in unique_variants]
+        unique_counts = [sequence_counts[seq] for seq in unique_variants]
+
+        # Ensure all lists have the same length
+        assert len(unique_variants) == len(unique_scores) == len(unique_first_iter) == len(unique_counts)
+
+        # Create dataframe
+        df = pd.DataFrame({
+            'sequences': unique_variants,
+            'scores': unique_scores,
+            'counts': unique_counts,
+            'iteration_first_appeared': unique_first_iter
+        })
+
+        # Sort by scores and keep top n sequences if specified
+        if n_seqs_to_keep:
+            df = df.sort_values(by='scores', ascending=False).head(n_seqs_to_keep)
+
+        return df
+
+    def _get_variants_and_scores(self) -> Tuple[List[str], np.ndarray]:
+        """Get the variants and scores based on the output type.
+        """
+        if self.output == 'last':
+            variants = self.canonical_chain_tokenizer.decode(self.chains_oh_history[-1])
+            scores = self.PoE_history[-1].numpy()
+        elif self.output == 'all':
+            variants = []
+            for i in range(len(self.chains_oh_history)):
+                variants += [ self.canonical_chain_tokenizer.decode(self.chains_oh_history[i]) ]
+            scores = torch.stack(self.PoE_history).numpy()
+        elif self.output == 'best':
+            best_idxs = torch.stack(self.PoE_history).argmax(0)
+            chains_oh_history = torch.stack(self.chains_oh_history) # [n_steps, n_chains, seq_len, n_tokens]
+            variants = self.canonical_chain_tokenizer.decode(
+                torch.stack([chains_oh_history[best_idxs[i],i] for i in range(self.parallel_chains)]))
+            scores = torch.stack(
+                [self.PoE_history[best_idxs[i]][i] for i in range(self.parallel_chains)]).numpy()
+        return variants, scores
+    
+
+    def save_results(self, 
+                     csv_filename: str,
+                     variants: Optional[List[str]] = None,
+                     scores: Optional[np.ndarray] = None,
+                     n_seqs_to_keep: int = 10000) -> None:
+        """
+        Save the output sequences and scores to a CSV file. Also saves the params
+        used to run the sampler in a `_params.txt` file.
+
+        Args:
+            filename (str): Filename for saving the results. Ends in .csv.
+            variants (list of list of str, optional): The list of sequence variants.
+            scores (torch.Tensor): The scores for the sequence variants.
+            n_seqs_to_keep (int, optional): Number of sequences to keep in the results. Default is 10000.
+        """
+
+        if variants is None or scores is None:
+            variants, scores = self._get_variants_and_scores()
+
+        df = self._prepare_results(variants, scores, n_seqs_to_keep)
+        df.to_csv(csv_filename, index=False, float_format='%.5g')
+
+        # Save the parameters used for DirectedEvolution
+        params = {
+            'parallel_chains': self.parallel_chains,
+            'n_steps': self.n_steps,
+            'max_mutations': self.max_mutations,
+            'preserved_regions': self.preserved_regions
+        }
+        params_filename = csv_filename.replace('.csv', '_params.txt')
+        with open(params_filename, 'w') as f:
+            for key, value in params.items():
+                f.write(f'{key}: {value}\n')
+
 
     def __call__(self) -> Tuple[List[str], np.ndarray]:
         """
@@ -243,7 +350,7 @@ class DirectedEvolution:
             ohs, proposed_PoE = self._product_of_experts(y_strs)
             grad_y = self._compute_gradients(ohs, proposed_PoE)
             grad_y = grad_y.detach()
-
+            
             with torch.no_grad():
                  # backwd from y -> x
                 traj_list.append(y)
@@ -257,9 +364,8 @@ class DirectedEvolution:
                     log_ratio += u_mask[:,id] * (cd_reverse.log_prob(onehot_Idx[id]) - forward_categoricals[id].log_prob(onehot_Idx[id]))
                 
                 #log_acc = log_backwd - log_fwd
-                m_term = (proposed_PoE - PoE)
+                m_term = proposed_PoE - PoE
                 log_acc = m_term + log_ratio
-                
                 accepted = (log_acc.exp() >= torch.rand_like(log_acc)).float().view(-1, *([1] * x_rank))
                 cur_chains_oh = y * accepted + (1.0 - accepted) * cur_chains_oh
 
@@ -267,15 +373,16 @@ class DirectedEvolution:
             self.chains_oh = cur_chains_oh
             self.chains = self.canonical_chain_tokenizer.decode(cur_chains_oh)
             # History book-keeping
-            self.chains_oh_history += [cur_chains_oh.clone()]
+            self.chains_oh_history += [cur_chains_oh.clone().detach().cpu()]
             PoE = proposed_PoE * accepted.squeeze() + PoE * (1. - accepted.squeeze())
-            self.PoE_history += [PoE.clone()]
-            
+            self.PoE_history += [PoE.clone().detach().cpu()]
+
             if self.verbose:
                 x_strs = self.canonical_chain_tokenizer.decode(cur_chains_oh)
-                print(f'step {i} acceptance rate: {log_acc.exp().item():.4f}')
-                for idx,variant in enumerate(x_strs):
-                    print(f'>chain {idx}, Product of Experts score: {PoE[idx]:.4f}')
+                # loops over # parallel chains
+                for idx, variant in enumerate(x_strs):
+                    print(f'>step {i}, chain {idx}, acc. rate: {log_acc.exp()[idx].item():.4f}, '
+                          f'product of experts score: {PoE[idx].item():.4f}')
                     utils.print_variant_in_color(variant, self.wtseq)
 
             if self.max_mutations > 0:
@@ -283,23 +390,8 @@ class DirectedEvolution:
                 dist = utils.mut_distance(cur_chains_oh, self.wt_oh)
                 mask_flag = (dist >= self.max_mutations).bool()
                 mask_flag = mask_flag.reshape(self.parallel_chains)
-                cur_chains_oh[mask_flag] = self.wt_oh            
-
-        if self.output == 'last':
-            output_ = self.canonical_chain_tokenizer.decode(cur_chains_oh)
-            scores_ = self.PoE_history[-1].detach().cpu().numpy()
-        elif self.output == 'all':
-            output_ = []
-            for i in range(len(self.chains_oh_history)):
-                output_ += [ self.canonical_chain_tokenizer.decode(self.chains_oh_history[i]) ]
-            scores_ = torch.stack(self.PoE_history).detach().cpu().numpy()
-        elif self.output == 'best':
-            best_idxs = torch.stack(self.PoE_history).argmax(0)
-            chains_oh_history = torch.stack(self.chains_oh_history) # [n_steps, n_chains, seq_len, n_tokens]
-            output_ = self.canonical_chain_tokenizer.decode(
-                torch.stack([chains_oh_history[best_idxs[i],i] for i in range(self.parallel_chains)]))
-            scores_ = torch.stack(
-                [self.PoE_history[best_idxs[i]][i] for i in range(self.parallel_chains)]).detach().cpu().numpy()
-        return output_, scores_
+                cur_chains_oh[mask_flag] = self.wt_oh
+            
+        return self._get_variants_and_scores()
 
 
