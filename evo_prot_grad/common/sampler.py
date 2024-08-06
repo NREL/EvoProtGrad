@@ -379,10 +379,8 @@ class DirectedEvolution:
 
             if self.verbose:
                 x_strs = self.canonical_chain_tokenizer.decode(cur_chains_oh)
-                # loops over # parallel chains
-                for idx, variant in enumerate(x_strs):
-                    print(f'>step {i}, chain {idx}, acc. rate: {log_acc.exp()[idx].item():.4f}, '
-                          f'product of experts score: {PoE[idx].item():.4f}')
+                for idx,variant in enumerate(x_strs):
+                    print(f'>step {i}, chain {idx}, acceptance rate: {log_acc[idx].exp().item():.4f}, product of experts score: {PoE[idx]:.4f}')
                     utils.print_variant_in_color(variant, self.wtseq)
 
             if self.max_mutations > 0:

@@ -17,9 +17,9 @@ def safe_logits_to_probs(logits: torch.Tensor) -> torch.Tensor:
         probs (torch.Tensor): [parallel_chains, seq_len, vocab_size]
     """
     logits = logits - torch.logsumexp(logits, dim=-1, keepdim=True)
-    probs = torch.softmax(logits, dim=-1)
+    probs = torch.softmax(logits, dim=-1, dtype=torch.double)
     probs = torch.distributions.utils.clamp_probs(probs)
-    return probs
+    return probs.float()
 
 
 def mut_distance(x, wt):
