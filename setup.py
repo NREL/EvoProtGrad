@@ -7,7 +7,7 @@ with open('README.md', 'r') as f:
     readme = f.read()
 
 setup(name='evo_prot_grad',
-      version='0.2',
+      version='0.2.1',
       description='Directed evolution of proteins with fast gradient-based discrete MCMC.',
       author='Patrick Emami',
       author_email='Patrick.Emami@nrel.gov',

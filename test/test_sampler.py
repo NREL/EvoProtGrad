@@ -1,8 +1,10 @@
 import unittest 
+import os
 from transformers import AutoModel
 from evo_prot_grad import get_expert
 from evo_prot_grad.common.sampler import DirectedEvolution
 import numpy as np
+
 
 class TestSampler(unittest.TestCase):
     
@@ -13,6 +15,7 @@ class TestSampler(unittest.TestCase):
             1.0,
             AutoModel.from_pretrained('NREL/avGFP-fluorescence-onehot-cnn',
                                        trust_remote_code=True))
+
 
     def test_init(self):
         # Test that the sampler is initialized correctly
@@ -159,3 +162,39 @@ class TestSampler(unittest.TestCase):
         )()
         self.assertEqual(len(epg), 2)
         self.assertEqual(len(epg[0]), 2)
+
+    def test_save_results(self):
+        # check if write access to /tmp is available
+        if not os.access('/tmp', os.W_OK):
+            self.skipTest('No write access to /tmp')
+       
+        # Test saving results
+        de = DirectedEvolution(
+            experts=[self.gfp_expert],
+            parallel_chains=2,
+            n_steps=2,
+            max_mutations=-1,
+            output = 'all',
+            wt_fasta='test/gfp.fasta'
+        )
+        outputs, scores = de()
+            
+        temp_file_name ='/tmp/test.csv'
+
+        de.save_results(temp_file_name)
+
+        # remove the file
+        os.remove(temp_file_name)
+        os.remove(temp_file_name.replace('.csv', '_params.txt'))
+        
+        de.save_results(temp_file_name, outputs, scores, 1)
+
+        os.remove(temp_file_name)
+         
+        with open(temp_file_name.replace('.csv', '_params.txt'), 'r') as f:
+            params = f.readlines()
+            self.assertEqual(params[0].strip(), 'parallel_chains: 2')
+            self.assertEqual(params[1].strip(), 'n_steps: 2')
+            self.assertEqual(params[2].strip(), 'max_mutations: -1')
+        
+        os.remove(temp_file_name.replace('.csv', '_params.txt'))

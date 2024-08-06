@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1]
+
+- Fixed a bug in the variant scoring strategy `pseudolikelihood_ratio` when `parallel_chains` was greater than 1.
+- Added the ability to save results (output sequences and scores, plus a few other tidbits) to a CSV file by calling `save_results()` on the DirectedEvolution object. 
+- Minor modification to `embeddings.py` to support pLMs using mixed precision.
+- Added unit tests for the `VariantScoring` class and a new unit test for the sampler to test saving results. 
+
 ## [0.2] 
 
 ### Major change - Variant Scoring

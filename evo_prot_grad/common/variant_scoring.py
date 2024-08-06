@@ -48,7 +48,10 @@ class VariantScoring:
         """
         if self.wt_score_cache is None:
             raise ValueError("Wildtype pseudolikelihood must be set before calling the expert with `init_wildtype`.")
-        return self.pseudolikelihood(x_oh, logits).sum(dim=[1,2]) - self.wt_score_cache.repeat(x_oh.shape[0])
+        # wt_score_cache is [1, seq_len, vocab_size], converts to
+        # [parallel_chains, seq_len, vocab_size] with `.repeat`
+        return (self.pseudolikelihood(x_oh, logits) - \
+                self.wt_score_cache.repeat(x_oh.shape[0], 1, 1)).sum(dim=[1,2])
     
 
     def mutant_marginal(self, x_oh: torch.Tensor, logits: torch.Tensor, wt_oh: torch.Tensor) -> torch.Tensor:
@@ -93,7 +96,7 @@ class VariantScoring:
         if self.scoring_strategy == "attribute_value":
             if self.wt_score_cache is None:
                 raise ValueError("Wildtype attribute value must be set before calling the expert with `init_wildtype`.")
-            return x_pred - self.wt_score_cache.repeat(x_oh.shape[0])
+            return x_pred - self.wt_score_cache # will get broadcasted
         if self.scoring_strategy == "pseudolikelihood_ratio":
             return self.pseudolikelihood_ratio(x_oh, x_pred)
         elif self.scoring_strategy == "mutant_marginal":
