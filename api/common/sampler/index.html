@@ -884,6 +884,125 @@ Must provide one of wt_protein or wt_fasta.</p>
 
 
 
+<h5 id="evo_prot_grad.common.sampler.DirectedEvolution._prepare_results" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">_prepare_results</span><span class="p">(</span><span class="n">variants</span><span class="p">,</span> <span class="n">scores</span><span class="p">,</span> <span class="n">n_seqs_to_keep</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Prepare the results by sorting and selecting the top sequences.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>variants</code></td>
+          <td>
+                <code><span title="typing.List">List</span>[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The list of sequence variants. Shape is (n_steps, parallel_chains).</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scores</code></td>
+          <td>
+                <code><span title="numpy">np</span>.<span title="numpy.ndarray">ndarray</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The scores for the sequence variants. Shape is (n_steps, parallel_chains).</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_seqs_to_keep</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Number of sequences to keep. Default is None (keep all).</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>DataFrame</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>DataFrame of results.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.common.sampler.DirectedEvolution._get_variants_and_scores" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">_get_variants_and_scores</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the variants and scores based on the output type.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
 <h5 id="evo_prot_grad.common.sampler.DirectedEvolution._product_of_experts" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">_product_of_experts</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span></code>
 
@@ -1046,6 +1165,98 @@ used to construct one-hot inputs, in a canonical order before summing gradients 
             <div class="doc-md-description">
               <p>gradients of the product of experts with respect to the one-hots.</p>
             </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h5 id="evo_prot_grad.common.sampler.DirectedEvolution.save_results" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">save_results</span><span class="p">(</span><span class="n">csv_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">variants</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scores</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">n_seqs_to_keep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+
+</h5>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Save the output sequences and scores to a CSV file. Also saves the params
+used to run the sampler in a <code>_params.txt</code> file.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>filename</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Filename for saving the results. Ends in .csv.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>variants</code></td>
+          <td>
+                <code>list of list of str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The list of sequence variants.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>scores</code></td>
+          <td>
+                <code>torch.<span title="torch.Tensor">Tensor</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The scores for the sequence variants.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>n_seqs_to_keep</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Number of sequences to keep in the results. Default is 10000.</p>
+            </div>
+          </td>
+          <td>
+                <code>10000</code>
           </td>
         </tr>
     </tbody>
