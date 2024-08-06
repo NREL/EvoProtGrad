@@ -174,7 +174,7 @@ class DirectedEvolution:
             n_seqs_to_keep (int, optional): Number of sequences to keep. Default is None (keep all).
 
         Returns:
-            DataFrame: DataFrame of results.
+            (pd.DataFrame): DataFrame of results.
         """
 
         # Initialize dictionaries to store counts and first appearance iteration
@@ -247,7 +247,7 @@ class DirectedEvolution:
         used to run the sampler in a `_params.txt` file.
 
         Args:
-            filename (str): Filename for saving the results. Ends in .csv.
+            csv_filename (str): Filename for saving the results. Ends in .csv.
             variants (list of list of str, optional): The list of sequence variants.
             scores (torch.Tensor): The scores for the sequence variants.
             n_seqs_to_keep (int, optional): Number of sequences to keep in the results. Default is 10000.
