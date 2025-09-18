@@ -136,7 +136,6 @@ class DirectedEvolution:
             scores += [expert.temperature * score]
         # sum scores over experts
         return ohs, torch.stack(scores, dim=0).sum(dim=0)
-    
 
     def _compute_gradients(self, ohs: List[torch.Tensor], PoE: torch.Tensor) -> torch.Tensor:
         """Compute the gradients of the product of experts
@@ -160,8 +159,17 @@ class DirectedEvolution:
             # This checks whether the gradient sequence length
             # is exactly two more than the input sequence length.
             if oh_grad.shape[1] == self.chains_oh.shape[1] + 2:
-                oh_grad = oh_grad[:,1:-1]
-            summed_grads += [ oh_grad @ expert.expert_to_canonical_order ]
+                oh_grad = oh_grad[:, 1:-1]
+
+            # some tokenizers add an <end> token to the protein
+            # sequence like ProtT5 and Ankh, check and remove here
+            # if necessary.
+            # This checks whether the gradient sequence length
+            # is exactly one more than the input sequence length.
+            elif oh_grad.shape[1] == self.chains_oh.shape[1] + 1:
+                oh_grad = oh_grad[:, :-1]
+
+            summed_grads += [oh_grad @ expert.expert_to_canonical_order]
         # sum over experts
         return torch.stack(summed_grads, dim=0).sum(dim=0)
 
